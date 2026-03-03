@@ -1,0 +1,103 @@
+event: child_fever
+trigger:
+  season: winter
+  has_flag: has_child
+  random_chance: 0.3
+
+nodes:
+  - id: onset
+    text: "Your youngest has been burning with fever for two days. She won't eat. She barely opens her eyes."
+    effects:
+      - stat: morale
+        delta: -10
+    choices:
+      - text: "Bring her to the medicine man"
+        next: shaman
+      - text: "Keep her warm and try to get her to drink water"
+        next: home_care
+      - text: "Pray to the spirits"
+        next: prayer
+
+  - id: shaman
+    text: "The medicine man examines her. He says a dark spirit has entered through her ear. He mixes ash with animal fat and packs it into her ear canal, then cuts small lines on her chest to 'release the spirit.' She screams. The wounds will become infected within days."
+    effects:
+      - stat: child_health
+        delta: -25
+      - stat: morale
+        delta: -5
+      - set_flag: shaman_treatment
+    choices:
+      - text: "Trust the medicine man's wisdom"
+        next: shaman_outcome
+      - text: "Take her home"
+        next: home_care_late
+
+  - id: prayer
+    text: "You spend the night by the fire, speaking to spirits you cannot see and who do not answer. Your daughter's breathing grows shallow. By morning, nothing has changed. The other women look at you with pity. Prayer is all anyone has, and it is not enough."
+    effects:
+      - stat: morale
+        delta: -10
+      - stat: child_health
+        delta: -15
+    choices:
+      - text: "Bring her to the medicine man"
+        next: shaman
+      - text: "Try to care for her yourself"
+        next: home_care
+
+  - id: home_care
+    text: "You hold her through the night, dripping water into her mouth from a soaked hide. By morning the fever hasn't broken. The other women say you should have gone to the medicine man. Your mother-in-law says the child is being punished for something you did."
+    effects:
+      - stat: child_health
+        delta: -10
+      - stat: standing
+        delta: -5
+    choices:
+      - text: "Give in and bring her to the medicine man"
+        next: shaman
+      - text: "Keep trying on your own"
+        next: home_care_resolve
+
+  - id: home_care_late
+    text: "You bring her home from the medicine man. The cuts on her chest are already red and swollen. You wash them with water — it is all you have. You do not know about infection. No one here does."
+    effects:
+      - stat: child_health
+        delta: -15
+    next: home_care_resolve
+
+  - id: shaman_outcome
+    text: "The medicine man performs a chant over her through the night. He burns sage and blows smoke over her body. The cuts on her chest weep. By the third day, the fever breaks — not because of the treatment, but despite it. She will live, but the scars on her chest will never heal properly."
+    effects:
+      - stat: child_health
+        delta: 10
+      - stat: morale
+        delta: 10
+      - set_flag: child_scarred
+    end: true
+
+  - id: home_care_resolve
+    text: "Three more days pass. You barely sleep. You drip water and broth into her mouth. You keep the fire burning. Everything depends on her body's ability to fight what is inside her — and you have no way to help it."
+    roll:
+      stat: child_health
+      dc: 40
+      success: child_survives
+      failure: child_dies
+
+  - id: child_survives
+    text: "On the fifth morning, she opens her eyes and asks for food. The relief is so sharp it feels like pain. She will recover slowly, but she will live. You have been lucky. You know it is only luck."
+    effects:
+      - stat: morale
+        delta: 15
+      - stat: child_health
+        delta: 20
+    end: true
+
+  - id: child_dies
+    text: "She stops breathing just before dawn. You have no way to write her name. There will be no stone with a date. In three generations, no one in the tribe will remember she existed. You wrap her in hide and carry her to the burial ground. She is the third child you've lost."
+    effects:
+      - stat: morale
+        delta: -30
+      - stat: children
+        delta: -1
+      - set_flag: lost_child
+    end: true

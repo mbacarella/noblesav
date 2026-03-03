@@ -1,0 +1,117 @@
+event: prologue
+nodes:
+  - id: birth
+    text: "You are born in a bark-covered longhouse in the northeast woodlands. It is late autumn. Your mother has been in labor for fourteen hours. There is no midwife trained in medicine — only your grandmother and two older women from the clan, doing what they can."
+    next: survival_odds
+
+  - id: survival_odds
+    text: "You will never know this, but roughly one in three children born here will not survive to age five. Dysentery, pneumonia, infected wounds, malnutrition, or simply the cold. Your mother has had six pregnancies. Three of your siblings are alive. Your older brother died at two from a fever no one could treat. Another was stillborn."
+    next: naming
+
+  - id: naming
+    text: "On the fourth day, when it seems you will live, you are given a name. It is not written down — no one here has writing. Your name exists only in the mouths of the people around you. If they all die, your name dies with them."
+    next: first_year
+
+  - id: first_year
+    text: "Your first winter is brutal. The longhouse is smoky and crowded — twelve families sharing the space. The fire keeps you alive but the smoke burns your lungs. Two infants in the longhouse do not survive to spring. You do, though you will carry the cough for months."
+    effects:
+      - stat: health
+        delta: -10
+    next: early_childhood
+
+  - id: early_childhood
+    text: "By the time you can walk, you have learned the most important rule of your world: everything is trying to kill you. The river can drown you. The forest can lose you. The plants can poison you. The cold can freeze you. Other tribes can take you. There is no safety net. There is no rescue coming."
+    next: mothers_lesson
+
+  - id: mothers_lesson
+    text: "Your mother carries you on her back while she works the fields. She plants corn, beans, and squash — the Three Sisters. It is backbreaking work done with stone tools. She is twenty-two and looks forty. She has never had a day of rest that she can remember."
+    next: chapter_choice
+
+  - id: chapter_choice
+    text: "You are five years old. You have survived longer than many. The world stretches out before you — vast, green, and utterly indifferent to whether you live or die. Your childhood begins now."
+    effects:
+      - stat: morale
+        delta: 5
+      - set_flag: survived_infancy
+    choices:
+      - text: "Follow the older children to the river"
+        next: river
+      - text: "Stay close to your mother in the fields"
+        next: fields
+      - text: "Wander toward the edge of the forest"
+        next: forest
+
+  - id: river
+    text: "The older children are catching crayfish in the shallows. A boy named Runs-Fast dares you to cross to the big rock in the middle. The current is stronger than it looks. Last summer, a girl your age was swept away and found downstream two days later. No one speaks her name anymore."
+    effects:
+      - stat: standing
+        delta: 5
+    choices:
+      - text: "Try to cross to the rock"
+        next: river_cross
+      - text: "Stay in the shallows"
+        next: river_safe
+
+  - id: river_cross
+    text: "You wade in. The water reaches your chest and pulls at you. Your feet slip on the mossy stones. For a terrible moment you go under, water filling your nose and mouth. Then your hand finds the rock and you pull yourself up, gasping. The other children cheer. You have proven something, though you are not sure what."
+    effects:
+      - stat: standing
+        delta: 5
+      - stat: health
+        delta: -5
+      - set_flag: brave_child
+    choices:
+      - text: "Continue playing at the river"
+        next: river_afternoon
+      - text: "Go back to the village, shaken"
+        next: village_return
+
+  - id: river_safe
+    text: "You stay in the shallows, catching crayfish with the younger children. Runs-Fast calls you a coward. The word stings, but you are alive and dry. In this world, that counts for something."
+    effects:
+      - stat: morale
+        delta: -5
+      - set_flag: cautious_child
+    next: river_afternoon
+
+  - id: river_afternoon
+    text: "The afternoon passes. You eat a crayfish raw because no one brought fire. It tastes like mud and river water. This is your life — small victories measured against constant, ordinary danger."
+    next: evening
+
+  - id: fields
+    text: "Your mother shows you which plants are food and which are not. She points to a cluster of white berries. 'Never eat those. A child in the Wolf Clan ate them two summers ago. He was dead before sundown.' She says it as a fact, not a warning. Death is not dramatic here. It is ordinary."
+    effects:
+      - stat: morale
+        delta: -5
+      - set_flag: knows_plants
+    next: evening
+
+  - id: forest
+    text: "The forest is enormous and you are very small. You find a clearing where sunlight comes through and sit among the ferns. It is beautiful. It is also where a hunting party from the Flint People killed three of your clan's warriors last autumn. Beauty and violence share the same ground here."
+    effects:
+      - set_flag: forest_child
+    next: evening
+
+  - id: village_return
+    text: "You walk back to the village alone, still coughing up river water. Your grandmother sees you and says nothing. She lost four of her own children. She knows the river could have taken you. She is grateful it did not, but she will not say so. Grief and gratitude both live quietly here."
+    effects:
+      - stat: health
+        delta: -5
+    next: evening
+
+  - id: evening
+    text: "That night, the longhouse fills with smoke and voices. An elder tells a story about the world's creation — how the Great Turtle carries the earth on its back. You fall asleep listening. You have no books, no toys, no possessions beyond the clothes on your back. But you are alive. For now, that is enough."
+    effects:
+      - stat: warmth
+        delta: 5
+      - stat: morale
+        delta: 5
+    choices:
+      - text: "Continue to Chapter 1"
+        next: prologue_end
+
+  - id: prologue_end
+    text: "The seasons will turn. You will grow, if you are lucky. Many won't be. This is not a story about heroes or villains. It is a story about what it actually costs to be human when the world offers you nothing but what you can take from it with your hands."
+    effects:
+      - set_flag: prologue_complete
+    end: true
