@@ -108,4 +108,19 @@ export class NarrativeEngine {
   hasAutoAdvance(): boolean {
     return this.currentNode?.next !== undefined;
   }
+
+  hasRandom(): boolean {
+    return (this.currentNode?.random?.length ?? 0) > 0;
+  }
+
+  resolveRandom(): NarrativeNode | null {
+    const options = this.currentNode?.random;
+    if (!options || options.length === 0) return null;
+    const pick = options[Math.floor(Math.random() * options.length)];
+    const nextNode = this.nodeMap.get(pick);
+    if (!nextNode) return null;
+    this.currentNode = nextNode;
+    this.applyNodeEffects(nextNode);
+    return nextNode;
+  }
 }

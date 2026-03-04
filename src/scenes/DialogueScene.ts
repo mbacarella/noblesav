@@ -7,6 +7,8 @@ import { ChoiceManager } from '../systems/ChoiceManager';
 
 const BOX_MARGIN = 16;
 const BOX_PADDING = 20;
+const HUD_HEIGHT = 60;
+
 const TEXT_STYLE: Phaser.Types.GameObjects.Text.TextStyle = {
   fontFamily: 'monospace',
   fontSize: '15px',
@@ -30,6 +32,7 @@ export class DialogueScene extends Phaser.Scene {
   private survival!: SurvivalSystem;
   private choiceManager!: ChoiceManager;
   private dialogueBox!: Phaser.GameObjects.Graphics;
+  private contentContainer!: Phaser.GameObjects.Container;
   private textObject!: Phaser.GameObjects.Text;
   private choiceObjects: Phaser.GameObjects.Text[] = [];
   private cursorObject!: Phaser.GameObjects.Text;
@@ -39,6 +42,10 @@ export class DialogueScene extends Phaser.Scene {
   private fullText: string = '';
   private typewriteTimer?: Phaser.Time.TimerEvent;
   private continuePrompt!: Phaser.GameObjects.Text;
+  private scrollY: number = 0;
+  private maxScroll: number = 0;
+  private visibleHeight: number = 0;
+  private scrollIndicator!: Phaser.GameObjects.Text;
 
   constructor() {
     super({ key: 'DialogueScene' });
@@ -50,37 +57,84 @@ export class DialogueScene extends Phaser.Scene {
     this.engine = new NarrativeEngine(this.survival, this.choiceManager);
   }
 
-  create(data: { event: string }): void {
+  create(data: {
+    event: string;
+    affliction?: { effects: Record<string, number>; flags: string[] };
+    debugStats?: Record<string, number>;
+    debugFlags?: string[];
+  }): void {
+    // Apply birth affliction penalties
+    if (data.affliction) {
+      for (const [stat, delta] of Object.entries(data.affliction.effects)) {
+        this.survival.applyStat(stat, delta);
+      }
+      for (const flag of data.affliction.flags) {
+        this.choiceManager.setFlag(flag);
+      }
+    }
+
+    // Apply debug state for chapter skipping
+    if (data.debugStats) {
+      for (const [stat, value] of Object.entries(data.debugStats)) {
+        const current = this.survival.getStat(stat);
+        this.survival.applyStat(stat, value - current);
+      }
+    }
+    if (data.debugFlags) {
+      for (const flag of data.debugFlags) {
+        this.choiceManager.setFlag(flag);
+      }
+    }
+
     const width = this.cameras.main.width;
     const height = this.cameras.main.height;
 
     this.cameras.main.setBackgroundColor('#111111');
 
+    // Compute visible area
+    const boxTop = BOX_MARGIN;
+    const boxBottom = height - BOX_MARGIN - HUD_HEIGHT;
+    const boxHeight = boxBottom - boxTop;
+    this.visibleHeight = boxHeight - BOX_PADDING * 2;
+
     // Draw dialogue box background
     this.dialogueBox = this.add.graphics();
     this.drawDialogueBox();
 
-    // Main text
-    const textWidth = width - BOX_MARGIN * 2 - BOX_PADDING * 2;
-    TEXT_STYLE.wordWrap = { width: textWidth };
-    this.textObject = this.add.text(
+    // Content container — holds text + choices, gets scrolled
+    this.contentContainer = this.add.container(
       BOX_MARGIN + BOX_PADDING,
-      BOX_MARGIN + BOX_PADDING,
-      '',
-      TEXT_STYLE
+      boxTop + BOX_PADDING
     );
 
-    // Choice cursor
-    this.cursorObject = this.add.text(0, 0, '\u25b6', {
+    // Mask to clip content to the dialogue box
+    const maskShape = this.make.graphics({ x: 0, y: 0 });
+    maskShape.fillStyle(0xffffff);
+    maskShape.fillRect(
+      BOX_MARGIN, boxTop,
+      width - BOX_MARGIN * 2, boxHeight
+    );
+    const mask = maskShape.createGeometryMask();
+    this.contentContainer.setMask(mask);
+
+    // Main text (positioned within container at 0,0)
+    const textWidth = width - BOX_MARGIN * 2 - BOX_PADDING * 2;
+    TEXT_STYLE.wordWrap = { width: textWidth };
+    this.textObject = this.scene.scene.add.text(0, 0, '', TEXT_STYLE);
+    this.contentContainer.add(this.textObject);
+
+    // Choice cursor (in container)
+    this.cursorObject = this.scene.scene.add.text(0, 0, '\u25b6', {
       fontFamily: 'monospace',
       fontSize: '14px',
       color: '#ffffff',
     }).setVisible(false);
+    this.contentContainer.add(this.cursorObject);
 
-    // Continue prompt
+    // Continue prompt (fixed position, outside container)
     this.continuePrompt = this.add.text(
       width - BOX_MARGIN - BOX_PADDING - 10,
-      height - BOX_MARGIN - BOX_PADDING - 5,
+      boxBottom - 5,
       '\u25bc',
       { fontFamily: 'monospace', fontSize: '14px', color: '#666666' }
     ).setOrigin(1, 1).setVisible(false);
@@ -93,9 +147,22 @@ export class DialogueScene extends Phaser.Scene {
       repeat: -1,
     });
 
+    // Scroll indicator (fixed, top-right of box)
+    this.scrollIndicator = this.add.text(
+      width - BOX_MARGIN - BOX_PADDING - 10,
+      boxTop + 8,
+      '\u25b2',
+      { fontFamily: 'monospace', fontSize: '12px', color: '#444444' }
+    ).setOrigin(1, 0).setVisible(false);
+
     // Input
     this.input.keyboard!.on('keydown', this.handleInput, this);
     this.input.on('pointerdown', () => this.handleInput({ keyCode: 32 } as KeyboardEvent));
+
+    // Mouse wheel scrolling
+    this.input.on('wheel', (_pointer: Phaser.Input.Pointer, _gameObjects: unknown[], _deltaX: number, deltaY: number) => {
+      this.scroll(deltaY > 0 ? 30 : -30);
+    });
 
     // Launch status HUD
     this.scene.launch('StatusScene', { survival: this.survival });
@@ -107,23 +174,64 @@ export class DialogueScene extends Phaser.Scene {
   private drawDialogueBox(): void {
     const width = this.cameras.main.width;
     const height = this.cameras.main.height;
+    const boxTop = BOX_MARGIN;
+    const boxBottom = height - BOX_MARGIN - HUD_HEIGHT;
     this.dialogueBox.clear();
 
-    // Semi-transparent dark box
     this.dialogueBox.fillStyle(0x111122, 0.92);
     this.dialogueBox.fillRoundedRect(
-      BOX_MARGIN, BOX_MARGIN,
-      width - BOX_MARGIN * 2, height - BOX_MARGIN * 2 - 60,
+      BOX_MARGIN, boxTop,
+      width - BOX_MARGIN * 2, boxBottom - boxTop,
       6
     );
 
-    // Border
     this.dialogueBox.lineStyle(1, 0x445566, 0.8);
     this.dialogueBox.strokeRoundedRect(
-      BOX_MARGIN, BOX_MARGIN,
-      width - BOX_MARGIN * 2, height - BOX_MARGIN * 2 - 60,
+      BOX_MARGIN, boxTop,
+      width - BOX_MARGIN * 2, boxBottom - boxTop,
       6
     );
+  }
+
+  private updateScroll(): void {
+    const contentHeight = this.getContentHeight();
+    this.maxScroll = Math.max(0, contentHeight - this.visibleHeight);
+    this.scrollY = Math.min(this.scrollY, this.maxScroll);
+    this.scrollY = Math.max(0, this.scrollY);
+    this.contentContainer.y = (BOX_MARGIN + BOX_PADDING) - this.scrollY;
+    this.scrollIndicator.setVisible(this.scrollY > 0);
+  }
+
+  private scroll(delta: number): void {
+    this.scrollY += delta;
+    this.updateScroll();
+  }
+
+  private scrollToBottom(): void {
+    this.scrollY = this.maxScroll;
+    this.updateScroll();
+  }
+
+  private resetScroll(): void {
+    this.scrollY = 0;
+    this.updateScroll();
+  }
+
+  private getContentHeight(): number {
+    let bottom = this.textObject.height;
+    for (const choice of this.choiceObjects) {
+      const choiceBottom = choice.y + choice.height;
+      if (choiceBottom > bottom) bottom = choiceBottom;
+    }
+    return bottom;
+  }
+
+  private autoScrollDuringTypewrite(): void {
+    const contentHeight = this.textObject.height;
+    if (contentHeight > this.visibleHeight) {
+      this.scrollY = contentHeight - this.visibleHeight;
+      this.updateScroll();
+    }
   }
 
   private async loadAndStart(eventName: string): Promise<void> {
@@ -144,15 +252,22 @@ export class DialogueScene extends Phaser.Scene {
   private presentNode(node: NarrativeNode): void {
     this.clearChoices();
     this.continuePrompt.setVisible(false);
+    this.resetScroll();
     this.typewriteText(node.text, () => {
       if (node.roll) {
-        // Auto-resolve dice roll after text finishes
         const result = this.engine.resolveRoll(node.roll);
+        if (result) {
+          this.time.delayedCall(800, () => this.presentNode(result));
+        }
+      } else if (node.random && node.random.length > 0) {
+        const result = this.engine.resolveRandom();
         if (result) {
           this.time.delayedCall(800, () => this.presentNode(result));
         }
       } else if (node.choices && node.choices.length > 0) {
         this.showChoices(this.engine.getAvailableChoices());
+      } else if (node.next_event) {
+        this.continuePrompt.setVisible(true);
       } else if (node.next) {
         this.continuePrompt.setVisible(true);
       } else if (node.end) {
@@ -162,7 +277,6 @@ export class DialogueScene extends Phaser.Scene {
       }
     });
 
-    // Update HUD
     this.scene.get('StatusScene').events.emit('updateStats');
   }
 
@@ -173,11 +287,12 @@ export class DialogueScene extends Phaser.Scene {
 
     let charIndex = 0;
     this.typewriteTimer = this.time.addEvent({
-      delay: 25,
+      delay: 12,
       repeat: text.length - 1,
       callback: () => {
         charIndex++;
         this.textObject.setText(text.substring(0, charIndex));
+        this.autoScrollDuringTypewrite();
         if (charIndex >= text.length) {
           this.isTypewriting = false;
           onComplete();
@@ -192,6 +307,7 @@ export class DialogueScene extends Phaser.Scene {
     }
     this.textObject.setText(this.fullText);
     this.isTypewriting = false;
+    this.scrollToBottom();
   }
 
   private showText(text: string): void {
@@ -202,11 +318,11 @@ export class DialogueScene extends Phaser.Scene {
     this.currentChoices = choices;
     this.selectedIndex = 0;
 
-    const startY = this.textObject.y + this.textObject.height + 24;
-    const startX = BOX_MARGIN + BOX_PADDING + 20;
+    const startY = this.textObject.height + 24;
+    const startX = 20;
 
     choices.forEach((choice, i) => {
-      const text = this.add.text(startX, startY + i * 28, choice.text, CHOICE_STYLE)
+      const text = this.scene.scene.add.text(startX, startY + i * 28, choice.text, CHOICE_STYLE)
         .setInteractive()
         .on('pointerover', () => {
           this.selectedIndex = i;
@@ -217,14 +333,20 @@ export class DialogueScene extends Phaser.Scene {
           this.confirmChoice();
         });
       this.choiceObjects.push(text);
+      this.contentContainer.add(text);
     });
 
+    this.contentContainer.add(this.cursorObject);
     this.cursorObject.setVisible(true);
     this.updateChoiceHighlight();
+    this.scrollToBottom();
   }
 
   private clearChoices(): void {
-    this.choiceObjects.forEach(obj => obj.destroy());
+    this.choiceObjects.forEach(obj => {
+      this.contentContainer.remove(obj);
+      obj.destroy();
+    });
     this.choiceObjects = [];
     this.currentChoices = [];
     this.cursorObject.setVisible(false);
@@ -251,16 +373,44 @@ export class DialogueScene extends Phaser.Scene {
   }
 
   private showContinueToTitle(): void {
-    const width = this.cameras.main.width;
-    const y = this.textObject.y + this.textObject.height + 30;
-    this.add.text(width / 2, y, '[ End ]', {
-      fontFamily: 'monospace',
-      fontSize: '14px',
-      color: '#666666',
-    }).setOrigin(0.5).setInteractive().on('pointerdown', () => {
+    const y = this.textObject.height + 30;
+    const endText = this.scene.scene.add.text(
+      (this.cameras.main.width - BOX_MARGIN * 2 - BOX_PADDING * 2) / 2,
+      y, '[ End ]', {
+        fontFamily: 'monospace',
+        fontSize: '14px',
+        color: '#666666',
+      }
+    ).setOrigin(0.5).setInteractive().on('pointerdown', () => {
       this.scene.stop('StatusScene');
       this.scene.start('TitleScene');
     });
+    this.contentContainer.add(endText);
+    this.scrollToBottom();
+  }
+
+  private resolveAfterSkip(node: NarrativeNode): void {
+    if (node.roll) {
+      const result = this.engine.resolveRoll(node.roll);
+      if (result) {
+        this.time.delayedCall(300, () => this.presentNode(result));
+      }
+    } else if (node.random && node.random.length > 0) {
+      const result = this.engine.resolveRandom();
+      if (result) {
+        this.time.delayedCall(300, () => this.presentNode(result));
+      }
+    } else if (node.choices && node.choices.length > 0) {
+      this.showChoices(this.engine.getAvailableChoices());
+    } else if (node.next_event) {
+      this.continuePrompt.setVisible(true);
+    } else if (node.next) {
+      this.continuePrompt.setVisible(true);
+    } else if (node.end) {
+      this.showContinueToTitle();
+    } else {
+      this.continuePrompt.setVisible(true);
+    }
   }
 
   private handleInput(event: KeyboardEvent): void {
@@ -269,23 +419,9 @@ export class DialogueScene extends Phaser.Scene {
     // If typewriting, skip on any key
     if (this.isTypewriting) {
       this.skipTypewrite();
-      // After skipping, trigger the same logic as onComplete
       const node = this.engine.getCurrentNode();
       if (node) {
-        if (node.roll) {
-          const result = this.engine.resolveRoll(node.roll);
-          if (result) {
-            this.time.delayedCall(300, () => this.presentNode(result));
-          }
-        } else if (node.choices && node.choices.length > 0) {
-          this.showChoices(this.engine.getAvailableChoices());
-        } else if (node.next) {
-          this.continuePrompt.setVisible(true);
-        } else if (node.end) {
-          this.showContinueToTitle();
-        } else {
-          this.continuePrompt.setVisible(true);
-        }
+        this.resolveAfterSkip(node);
       }
       return;
     }
@@ -304,10 +440,12 @@ export class DialogueScene extends Phaser.Scene {
       return;
     }
 
-    // Continue prompt (auto-advance or just waiting)
+    // Continue prompt (auto-advance, chain event, or just waiting)
     if (key === Phaser.Input.Keyboard.KeyCodes.ENTER || key === Phaser.Input.Keyboard.KeyCodes.SPACE) {
       const node = this.engine.getCurrentNode();
-      if (node?.next) {
+      if (node?.next_event) {
+        this.loadAndStart(node.next_event);
+      } else if (node?.next) {
         const nextNode = this.engine.advanceToNext();
         if (nextNode) {
           this.presentNode(nextNode);

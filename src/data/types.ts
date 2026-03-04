@@ -31,7 +31,9 @@ export interface NarrativeNode {
   effects?: StatEffect[];
   choices?: NarrativeChoice[];
   roll?: DiceRoll;
+  random?: string[]; // randomly pick one of these node IDs
   next?: string; // auto-advance to next node
+  next_event?: string; // chain to another event YAML (by cache key)
   end?: boolean; // marks end of this event/chapter
 }
 

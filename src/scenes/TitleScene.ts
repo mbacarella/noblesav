@@ -1,5 +1,8 @@
 import Phaser from 'phaser';
 
+// Track infant deaths across scene restarts via module-level state
+let recentDeaths: number[] = [];
+
 export class TitleScene extends Phaser.Scene {
   constructor() {
     super({ key: 'TitleScene' });
@@ -9,7 +12,6 @@ export class TitleScene extends Phaser.Scene {
     const width = this.cameras.main.width;
     const height = this.cameras.main.height;
 
-    // Dark background
     this.cameras.main.setBackgroundColor('#0a0a0a');
 
     // Title
@@ -43,13 +45,26 @@ export class TitleScene extends Phaser.Scene {
       repeat: -1,
     });
 
-    // Any key starts the game
-    this.input.keyboard!.on('keydown', () => {
-      this.scene.start('DialogueScene', { event: 'prologue' });
-    });
+    // Any key starts the game — but you probably won't make it
+    const startGame = () => {
+      this.input.keyboard!.removeAllListeners();
+      this.input.removeAllListeners();
 
-    this.input.on('pointerdown', () => {
-      this.scene.start('DialogueScene', { event: 'prologue' });
-    });
+      // Mercy rule: 2+ deaths in the last 60 seconds = you survive
+      const now = Date.now();
+      recentDeaths = recentDeaths.filter(t => now - t < 60_000);
+      const mercyGranted = recentDeaths.length >= 2;
+
+      if (!mercyGranted && Math.random() < 0.5) {
+        recentDeaths.push(now);
+        this.scene.start('DeathScene');
+      } else {
+        recentDeaths = [];
+        this.scene.start('AfflictionScene');
+      }
+    };
+
+    this.input.keyboard!.on('keydown', startGame);
+    this.input.on('pointerdown', startGame);
   }
 }

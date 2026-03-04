@@ -10,21 +10,82 @@ nodes:
 
   - id: naming
     text: "On the fourth day, when it seems you will live, you are given a name. It is not written down — no one here has writing. Your name exists only in the mouths of the people around you. If they all die, your name dies with them."
-    next: first_year
+    random:
+      - fork_longhouse
+      - fork_aunt
 
-  - id: first_year
+  # === PATH A: The Longhouse ===
+
+  - id: fork_longhouse
     text: "Your first winter is brutal. The longhouse is smoky and crowded — twelve families sharing the space. The fire keeps you alive but the smoke burns your lungs. Two infants in the longhouse do not survive to spring. You do, though you will carry the cough for months."
     effects:
       - stat: health
         delta: -10
-    next: early_childhood
+      - set_flag: longhouse_child
+    next: longhouse_spring
 
-  - id: early_childhood
+  - id: longhouse_spring
+    text: "Spring comes like a reprieve. The snow melts and the world opens up. Your mother straps you to a cradleboard and carries you to the fields. You spend your first year watching her back as she works — bending, digging, planting. The cradleboard presses your skull flat at the back. It will stay that shape."
+    next: longhouse_summer_evening
+
+  - id: longhouse_summer_evening
+    text: "One evening in your second summer, your mother carries you down to the river at dusk. The water is golden. Fireflies rise from the grass in slow drifts. She holds you on her hip and stands in the shallows and the two of you watch the light leave the sky, the stars arriving one at a time like careful visitors. She hums something — not a song you will ever remember, just vibration and warmth. This is the closest thing to safety that exists in your world."
+    effects:
+      - stat: morale
+        delta: 10
+    next: longhouse_toddler
+
+  - id: longhouse_toddler
     text: "By the time you can walk, you have learned the most important rule of your world: everything is trying to kill you. The river can drown you. The forest can lose you. The plants can poison you. The cold can freeze you. Other tribes can take you. There is no safety net. There is no rescue coming."
-    next: mothers_lesson
+    next: longhouse_mother
 
-  - id: mothers_lesson
+  - id: longhouse_mother
     text: "Your mother carries you on her back while she works the fields. She plants corn, beans, and squash — the Three Sisters. It is backbreaking work done with stone tools. She is twenty-two and looks forty. She has never had a day of rest that she can remember."
+    next: chapter_choice
+
+  # === PATH B: The Aunt ===
+
+  - id: fork_aunt
+    text: "Your mother does not stop bleeding after the birth. The women pack the wound with moss and hold her legs up. Your grandmother chants. Nothing works. She is dead before you are a day old. You will never know her face. No one here can draw it for you."
+    effects:
+      - stat: morale
+        delta: -15
+      - set_flag: motherless
+    next: aunt_takes_you
+
+  - id: aunt_takes_you
+    text: "Your mother's sister takes you. She already has four children and not enough milk for the last one. She is not cruel — she simply has nothing to spare. A woman in the Bear Clan who recently lost an infant nurses you when she can. You are passed between women like a problem no one wants to own."
+    effects:
+      - stat: standing
+        delta: -10
+    next: aunt_winter
+
+  - id: aunt_winter
+    text: "Your first winter, you sleep furthest from the fire. Not by malice — there are simply too many bodies and not enough warmth. You are sick constantly. A rattling cough that never fully clears. Your aunt's oldest son resents the noise you make at night. He is seven. He pinches you when no one is looking."
+    effects:
+      - stat: health
+        delta: -15
+      - stat: warmth
+        delta: -10
+    next: aunt_warmth
+
+  - id: aunt_warmth
+    text: "But there is this: the woman from the Bear Clan who nursed you — she has no obligation to you, no family tie, nothing. Yet sometimes in the evening she finds you and picks you up and holds you against her chest. She lost her own child and something in her body still needs to hold one. You are too young to understand this. You only know that sometimes, for no reason, someone warm is there."
+    effects:
+      - stat: morale
+        delta: 10
+    next: aunt_learning
+
+  - id: aunt_learning
+    text: "You learn to walk late. No one has time to help you practice. You learn by pulling yourself up on the longhouse posts and falling until you stop falling. By the time you can run, you have already learned the central fact of your life: no one is coming to help you. Everything you get, you get yourself."
+    effects:
+      - stat: morale
+        delta: -5
+      - set_flag: self_reliant
+    next: aunt_status
+
+  - id: aunt_status
+    text: "The other children know you are the one whose mother died. In a world without writing, people are their stories, and yours begins with loss. Your aunt does her duty but never calls you her child. You call her 'aunt' and she does not correct you."
     next: chapter_choice
 
   - id: chapter_choice
@@ -114,4 +175,4 @@ nodes:
     text: "The seasons will turn. You will grow, if you are lucky. Many won't be. This is not a story about heroes or villains. It is a story about what it actually costs to be human when the world offers you nothing but what you can take from it with your hands."
     effects:
       - set_flag: prologue_complete
-    end: true
+    next_event: chapter1
