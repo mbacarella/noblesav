@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { resetSeenDeaths } from './DeathScene';
 
 // Track infant deaths across scene restarts via module-level state
 let recentDeaths: number[] = [];
@@ -23,7 +24,7 @@ export class TitleScene extends Phaser.Scene {
     }).setOrigin(0.5);
 
     // Subtitle
-    this.add.text(width / 2, height / 3 + 45, 'A life before contact', {
+    this.add.text(width / 2, height / 3 + 45, 'Survival is not given', {
       fontFamily: 'monospace',
       fontSize: '14px',
       color: '#888888',
@@ -60,6 +61,7 @@ export class TitleScene extends Phaser.Scene {
         this.scene.start('DeathScene');
       } else {
         recentDeaths = [];
+        resetSeenDeaths();
         this.scene.start('AfflictionScene');
       }
     };

@@ -2,10 +2,6 @@ event: prologue
 nodes:
   - id: birth
     text: "You are born in a bark-covered longhouse in the northeast woodlands. It is late autumn. Your mother has been in labor for fourteen hours. There is no midwife trained in medicine — only your grandmother and two older women from the clan, doing what they can."
-    next: survival_odds
-
-  - id: survival_odds
-    text: "You will never know this, but roughly one in three children born here will not survive to age five. Dysentery, pneumonia, infected wounds, malnutrition, or simply the cold. Your mother has had six pregnancies. Three of your siblings are alive. Your older brother died at two from a fever no one could treat. Another was stillborn."
     next: naming
 
   - id: naming
@@ -29,6 +25,7 @@ nodes:
     next: longhouse_summer_evening
 
   - id: longhouse_summer_evening
+    mood: beauty
     text: "One evening in your second summer, your mother carries you down to the river at dusk. The water is golden. Fireflies rise from the grass in slow drifts. She holds you on her hip and stands in the shallows and the two of you watch the light leave the sky, the stars arriving one at a time like careful visitors. She hums something — not a song you will ever remember, just vibration and warmth. This is the closest thing to safety that exists in your world."
     effects:
       - stat: morale
@@ -70,6 +67,7 @@ nodes:
     next: aunt_warmth
 
   - id: aunt_warmth
+    mood: beauty
     text: "But there is this: the woman from the Bear Clan who nursed you — she has no obligation to you, no family tie, nothing. Yet sometimes in the evening she finds you and picks you up and holds you against her chest. She lost her own child and something in her body still needs to hold one. You are too young to understand this. You only know that sometimes, for no reason, someone warm is there."
     effects:
       - stat: morale

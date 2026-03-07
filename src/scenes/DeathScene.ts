@@ -1,5 +1,11 @@
 import Phaser from 'phaser';
 
+const seenDeaths = new Set<number>();
+
+export function resetSeenDeaths(): void {
+  seenDeaths.clear();
+}
+
 const DEATHS = [
   "You are stillborn. The umbilical cord was wrapped around your neck. Your mother will grieve, but not for long — she has three living children who need her. Your body is buried without a name.",
   "You survive birth but die within hours. Your lungs never fully open. You gasp, and then you stop. Your mother holds you until your grandmother takes you away.",
@@ -26,7 +32,13 @@ export class DeathScene extends Phaser.Scene {
 
     this.cameras.main.setBackgroundColor('#000000');
 
-    const death = DEATHS[Math.floor(Math.random() * DEATHS.length)];
+    // Pick from unseen deaths; reset if all seen
+    const unseen = DEATHS.map((_, i) => i).filter(i => !seenDeaths.has(i));
+    if (unseen.length === 0) seenDeaths.clear();
+    const pool = unseen.length > 0 ? unseen : DEATHS.map((_, i) => i);
+    const deathIndex = pool[Math.floor(Math.random() * pool.length)];
+    seenDeaths.add(deathIndex);
+    const death = DEATHS[deathIndex];
 
     const text = this.add.text(width / 2, height / 2 - 30, death, {
       fontFamily: 'monospace',

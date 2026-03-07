@@ -51,6 +51,7 @@ nodes:
     next: summer_beauty
 
   - id: summer_beauty
+    mood: beauty
     text: "But the forest in summer is something no one alive in the future will ever see. It goes on forever. The canopy is so thick the light comes through green and gold, like being inside a living thing. You find a patch of wild strawberries — tiny, no bigger than your thumbnail, sweeter than anything you have ever tasted or ever will taste. You eat them until your fingers are red and your stomach aches and you lie on your back in the moss and watch the light move through the leaves and for a whole afternoon you are not hungry and you are not afraid and the world is very, very beautiful."
     effects:
       - stat: morale
@@ -204,6 +205,7 @@ nodes:
     next: spring_geese
 
   - id: spring_geese
+    mood: beauty
     text: "One morning in early spring, you hear it before you see it — a sound like the sky tearing open. You look up and the geese are coming back. Hundreds of them, thousands, in long ragged lines that stretch from one horizon to the other. The whole village stops and looks up. Even the dogs go quiet. The sound fills the valley and the birds keep coming, wave after wave, and for a moment every person in the village is watching the same beautiful thing and no one is hungry and no one is afraid and the winter is over and the world is telling you so in a voice you can hear for miles."
     effects:
       - stat: morale
@@ -255,7 +257,7 @@ nodes:
     next: raid_aftermath
 
   - id: raid_aftermath
-    text: "When it is over, three men from your village are dead. One woman is taken. Two of the Flint People are dead as well — their bodies left where they fell. The village does not bury them. Let their own people come for them. The fishing weirs are destroyed. All that work, all those fish, gone. The dispute is not settled. It will never be settled. It will flare up again in a year, or five, or ten."
+    text: "When it is over, three men from your village are dead. Two women are taken — they will become wives in the Flint People's village, whether they want to or not. A young man, barely older than you, is taken too — bound with rawhide and led away. He will be a slave. Not the slavery of chains and plantations that will exist on this continent in a thousand years, but slavery all the same — forced labor, no standing, no clan, no voice. Every tribe here practices it. No one questions it. It is as ordinary as the river.\n\nThe fishing weirs are destroyed. All that work, all those fish, gone. The dispute is not settled. It will never be settled. It will flare up again in a year, or five, or ten."
     effects:
       - stat: morale
         delta: -5
@@ -272,7 +274,7 @@ nodes:
   # === SOCIAL DYNAMICS ===
 
   - id: husbands
-    text: "That summer, your mother takes a second husband. His name is Broken-Bow. He is the third man she has been with. The first — your father — died of a gut wound from a hunting accident when you were three. The second drowned running rapids. Broken-Bow is missing two fingers from frostbite. He is alive, which is the main qualification."
+    text: "That summer, your mother takes a third husband. His name is Broken-Bow. The first — your father — died of a gut wound from a hunting accident when you were three. The second drowned running rapids. Broken-Bow is missing two fingers from frostbite. He is alive, which is the main qualification."
     next: husbands_normal
 
   - id: husbands_normal
@@ -322,6 +324,7 @@ nodes:
     next: night_sky
 
   - id: night_sky
+    mood: beauty
     text: "That autumn, you walk out of the longhouse after everyone is asleep. You cannot stand the smoke and the breathing and the closeness. You sit on the cold ground and look up. There is no light pollution. There are no cities. There is nothing between you and the stars, and there are more of them than anyone in the future will ever see. The entire arm of the galaxy is a river of light across the sky. You do not know what it is. No one here does. You only know that it is vast and silent and that it does not care about Heavy-Hand or your aunt or the Flint People or anything. And somehow that is a comfort — that there is something too large to be ruined by the smallness of what happens on the ground."
     effects:
       - stat: morale

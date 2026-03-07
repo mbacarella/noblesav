@@ -8,6 +8,7 @@ import { ChoiceManager } from '../systems/ChoiceManager';
 const BOX_MARGIN = 16;
 const BOX_PADDING = 20;
 const HUD_HEIGHT = 60;
+const TITLE_HEIGHT = 20;
 
 const TEXT_STYLE: Phaser.Types.GameObjects.Text.TextStyle = {
   fontFamily: 'monospace',
@@ -26,6 +27,29 @@ const CHOICE_STYLE: Phaser.Types.GameObjects.Text.TextStyle = {
 
 const CHOICE_HOVER_STYLE = { color: '#ffffff' };
 const CHOICE_NORMAL_STYLE = { color: '#c8b080' };
+
+const CHAPTER_NAMES: Record<string, string> = {
+  prologue: 'Prologue: Birth',
+  chapter1: 'Chapter 1: Childhood',
+  chapter2: 'Chapter 2: Adolescence',
+  chapter3: 'Chapter 3: Adulthood',
+  chapter4: 'Chapter 4: Elder Years',
+};
+
+// Default colors
+const DEFAULT_BG_COLOR = 0x111111;
+const DEFAULT_TEXT_COLOR = '#e0dcc8';
+const DEFAULT_BORDER_COLOR = 0x445566;
+
+// Mood palettes
+const MOOD_COLORS = {
+  beauty: { bg: 0x0a1a0a, text: '#ffffff', border: 0x4a6a2a },
+  spirit: { bg: 0x150a1a, text: '#d8c8e8', border: 0x6a4a8a },
+};
+
+// Beauty gradient: green top → blue bottom, with two phases to cycle between
+const BEAUTY_TINT_A = { tl: 0xb0e8a0, tr: 0xa0e0b0, bl: 0x90c0e0, br: 0xa0b8e8 };
+const BEAUTY_TINT_B = { tl: 0xa0e0c0, tr: 0xb0e8b0, bl: 0x80b0f0, br: 0x90c8e0 };
 
 export class DialogueScene extends Phaser.Scene {
   private engine!: NarrativeEngine;
@@ -46,6 +70,14 @@ export class DialogueScene extends Phaser.Scene {
   private maxScroll: number = 0;
   private visibleHeight: number = 0;
   private scrollIndicator!: Phaser.GameObjects.Text;
+  private chapterLabel!: Phaser.GameObjects.Text;
+  private touchStartY: number = 0;
+  private isTouchScrolling: boolean = false;
+  private currentMood?: 'beauty' | 'spirit';
+  private currentBorderColor: number = DEFAULT_BORDER_COLOR;
+  private borderShimmerTween?: Phaser.Tweens.Tween;
+  private textWaveTween?: Phaser.Tweens.Tween;
+  private beautyTintTween?: Phaser.Tweens.Tween;
 
   constructor() {
     super({ key: 'DialogueScene' });
@@ -91,8 +123,25 @@ export class DialogueScene extends Phaser.Scene {
 
     this.cameras.main.setBackgroundColor('#111111');
 
+    // Title bar — clickable restart with confirmation
+    const titleText = this.add.text(BOX_MARGIN + 6, 4, 'NOBLE SAVAGE', {
+      fontFamily: 'monospace',
+      fontSize: '10px',
+      color: '#776655',
+    }).setInteractive({ useHandCursor: true })
+      .on('pointerover', () => titleText.setColor('#aa9988'))
+      .on('pointerout', () => titleText.setColor('#776655'))
+      .on('pointerdown', () => this.showConfirmRestart());
+
+    // Chapter label
+    this.chapterLabel = this.add.text(BOX_MARGIN + 6, 16, CHAPTER_NAMES[data.event] ?? '', {
+      fontFamily: 'monospace',
+      fontSize: '8px',
+      color: '#666655',
+    });
+
     // Compute visible area
-    const boxTop = BOX_MARGIN;
+    const boxTop = BOX_MARGIN + TITLE_HEIGHT;
     const boxBottom = height - BOX_MARGIN - HUD_HEIGHT;
     const boxHeight = boxBottom - boxTop;
     this.visibleHeight = boxHeight - BOX_PADDING * 2;
@@ -157,11 +206,34 @@ export class DialogueScene extends Phaser.Scene {
 
     // Input
     this.input.keyboard!.on('keydown', this.handleInput, this);
-    this.input.on('pointerdown', () => this.handleInput({ keyCode: 32 } as KeyboardEvent));
 
     // Mouse wheel scrolling
     this.input.on('wheel', (_pointer: Phaser.Input.Pointer, _gameObjects: unknown[], _deltaX: number, deltaY: number) => {
       this.scroll(deltaY > 0 ? 30 : -30);
+    });
+
+    // Touch / click: track drag for scrolling, tap for advance
+    this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
+      this.touchStartY = pointer.y;
+      this.isTouchScrolling = false;
+    });
+
+    this.input.on('pointermove', (pointer: Phaser.Input.Pointer) => {
+      if (!pointer.isDown) return;
+      const delta = this.touchStartY - pointer.y;
+      if (Math.abs(delta) > 8) {
+        this.isTouchScrolling = true;
+        this.scroll(delta);
+        this.touchStartY = pointer.y;
+      }
+    });
+
+    this.input.on('pointerup', () => {
+      if (!this.isTouchScrolling) {
+        // It was a tap, not a drag — advance text
+        this.handleInput({ keyCode: 32 } as KeyboardEvent);
+      }
+      this.isTouchScrolling = false;
     });
 
     // Launch status HUD
@@ -174,7 +246,7 @@ export class DialogueScene extends Phaser.Scene {
   private drawDialogueBox(): void {
     const width = this.cameras.main.width;
     const height = this.cameras.main.height;
-    const boxTop = BOX_MARGIN;
+    const boxTop = BOX_MARGIN + TITLE_HEIGHT;
     const boxBottom = height - BOX_MARGIN - HUD_HEIGHT;
     this.dialogueBox.clear();
 
@@ -185,12 +257,144 @@ export class DialogueScene extends Phaser.Scene {
       6
     );
 
-    this.dialogueBox.lineStyle(1, 0x445566, 0.8);
+    this.dialogueBox.lineStyle(1, this.currentBorderColor, 0.8);
     this.dialogueBox.strokeRoundedRect(
       BOX_MARGIN, boxTop,
       width - BOX_MARGIN * 2, boxBottom - boxTop,
       6
     );
+  }
+
+  private applyMood(mood: 'beauty' | 'spirit'): void {
+    if (this.currentMood === mood) return;
+    this.currentMood = mood;
+    const colors = MOOD_COLORS[mood];
+
+    // Background color tween
+    const cam = this.cameras.main;
+    const startR = (DEFAULT_BG_COLOR >> 16) & 0xff;
+    const startG = (DEFAULT_BG_COLOR >> 8) & 0xff;
+    const startB = DEFAULT_BG_COLOR & 0xff;
+    const endR = (colors.bg >> 16) & 0xff;
+    const endG = (colors.bg >> 8) & 0xff;
+    const endB = colors.bg & 0xff;
+
+    this.tweens.addCounter({
+      from: 0, to: 100, duration: 1500, ease: 'Sine.easeInOut',
+      onUpdate: (tween) => {
+        const t = tween.getValue()! / 100;
+        const r = Math.round(startR + (endR - startR) * t);
+        const g = Math.round(startG + (endG - startG) * t);
+        const b = Math.round(startB + (endB - startB) * t);
+        cam.setBackgroundColor((r << 16) | (g << 8) | b);
+      },
+    });
+
+    // Text color + gradient tint for beauty
+    this.textObject.setColor(colors.text);
+    if (this.beautyTintTween) { this.beautyTintTween.destroy(); this.beautyTintTween = undefined; }
+    if (mood === 'beauty') {
+      this.textObject.setTint(BEAUTY_TINT_A.tl, BEAUTY_TINT_A.tr, BEAUTY_TINT_B.bl, BEAUTY_TINT_B.br);
+      this.beautyTintTween = this.tweens.addCounter({
+        from: 0, to: 100, duration: 4000, yoyo: true, repeat: -1, ease: 'Sine.easeInOut',
+        onUpdate: (tween) => {
+          const t = tween.getValue()! / 100;
+          const lerp = (a: number, b: number) => {
+            const rA = (a >> 16) & 0xff, gA = (a >> 8) & 0xff, bA = a & 0xff;
+            const rB = (b >> 16) & 0xff, gB = (b >> 8) & 0xff, bB = b & 0xff;
+            const r = Math.round(rA + (rB - rA) * t);
+            const g = Math.round(gA + (gB - gA) * t);
+            const bl = Math.round(bA + (bB - bA) * t);
+            return (r << 16) | (g << 8) | bl;
+          };
+          this.textObject.setTint(
+            lerp(BEAUTY_TINT_A.tl, BEAUTY_TINT_B.tl),
+            lerp(BEAUTY_TINT_A.tr, BEAUTY_TINT_B.tr),
+            lerp(BEAUTY_TINT_A.bl, BEAUTY_TINT_B.bl),
+            lerp(BEAUTY_TINT_A.br, BEAUTY_TINT_B.br),
+          );
+        },
+      });
+    } else {
+      this.textObject.clearTint();
+    }
+
+    // Border shimmer
+    this.currentBorderColor = colors.border;
+    this.drawDialogueBox();
+    if (this.borderShimmerTween) this.borderShimmerTween.destroy();
+    this.borderShimmerTween = this.tweens.addCounter({
+      from: 0, to: 100, duration: 2000, yoyo: true, repeat: -1, ease: 'Sine.easeInOut',
+      onUpdate: (tween) => {
+        const t = tween.getValue()! / 100;
+        const alpha = 0.5 + 0.5 * t;
+        this.dialogueBox.clear();
+        const width = this.cameras.main.width;
+        const height = this.cameras.main.height;
+        const boxTop = BOX_MARGIN + TITLE_HEIGHT;
+        const boxBottom = height - BOX_MARGIN - HUD_HEIGHT;
+        this.dialogueBox.fillStyle(0x111122, 0.92);
+        this.dialogueBox.fillRoundedRect(BOX_MARGIN, boxTop, width - BOX_MARGIN * 2, boxBottom - boxTop, 6);
+        this.dialogueBox.lineStyle(1, colors.border, alpha);
+        this.dialogueBox.strokeRoundedRect(BOX_MARGIN, boxTop, width - BOX_MARGIN * 2, boxBottom - boxTop, 6);
+      },
+    });
+
+    // Spirit: wavy text
+    if (this.textWaveTween) { this.textWaveTween.destroy(); this.textWaveTween = undefined; }
+    if (mood === 'spirit') {
+      const baseY = this.textObject.y;
+      this.textWaveTween = this.tweens.add({
+        targets: this.textObject,
+        y: baseY - 2,
+        duration: 2000,
+        yoyo: true,
+        repeat: -1,
+        ease: 'Sine.easeInOut',
+      });
+    }
+  }
+
+  private clearMood(): void {
+    if (!this.currentMood) return;
+    this.currentMood = undefined;
+
+    // Tween background back
+    const cam = this.cameras.main;
+    // Read current bg color from camera
+    const currentBg = cam.backgroundColor;
+    const startR = currentBg.red, startG = currentBg.green, startB = currentBg.blue;
+    const endR = (DEFAULT_BG_COLOR >> 16) & 0xff;
+    const endG = (DEFAULT_BG_COLOR >> 8) & 0xff;
+    const endB = DEFAULT_BG_COLOR & 0xff;
+
+    this.tweens.addCounter({
+      from: 0, to: 100, duration: 1000, ease: 'Sine.easeInOut',
+      onUpdate: (tween) => {
+        const t = tween.getValue()! / 100;
+        const r = Math.round(startR + (endR - startR) * t);
+        const g = Math.round(startG + (endG - startG) * t);
+        const b = Math.round(startB + (endB - startB) * t);
+        cam.setBackgroundColor((r << 16) | (g << 8) | b);
+      },
+    });
+
+    // Reset text color and tint
+    this.textObject.setColor(DEFAULT_TEXT_COLOR);
+    this.textObject.clearTint();
+    if (this.beautyTintTween) { this.beautyTintTween.destroy(); this.beautyTintTween = undefined; }
+
+    // Stop border shimmer
+    if (this.borderShimmerTween) { this.borderShimmerTween.destroy(); this.borderShimmerTween = undefined; }
+    this.currentBorderColor = DEFAULT_BORDER_COLOR;
+    this.drawDialogueBox();
+
+    // Stop wavy text
+    if (this.textWaveTween) {
+      this.textWaveTween.destroy();
+      this.textWaveTween = undefined;
+      this.textObject.y = 0;
+    }
   }
 
   private updateScroll(): void {
@@ -243,6 +447,7 @@ export class DialogueScene extends Phaser.Scene {
 
     const event = yaml.load(yamlText) as NarrativeEvent;
     this.engine.registerEvent(event);
+    this.chapterLabel.setText(CHAPTER_NAMES[eventName] ?? eventName);
     const node = this.engine.startEvent(event.event);
     if (node) {
       this.presentNode(node);
@@ -253,6 +458,21 @@ export class DialogueScene extends Phaser.Scene {
     this.clearChoices();
     this.continuePrompt.setVisible(false);
     this.resetScroll();
+
+    // Apply or clear mood
+    if (node.mood) {
+      this.applyMood(node.mood);
+    } else {
+      this.clearMood();
+    }
+
+    // Exile: if standing has hit 0, the village casts you out
+    if (this.survival.getStat('standing') <= 0) {
+      this.scene.stop('StatusScene');
+      this.scene.start('ExileScene');
+      return;
+    }
+
     this.typewriteText(node.text, () => {
       if (node.roll) {
         const result = this.engine.resolveRoll(node.roll);
@@ -272,9 +492,8 @@ export class DialogueScene extends Phaser.Scene {
         this.continuePrompt.setVisible(true);
       } else if (node.end) {
         this.showContinueToTitle();
-      } else {
-        this.continuePrompt.setVisible(true);
       }
+      // No else — dead-end nodes show nothing
     });
 
     this.scene.get('StatusScene').events.emit('updateStats');
@@ -372,6 +591,61 @@ export class DialogueScene extends Phaser.Scene {
     }
   }
 
+  private showConfirmRestart(): void {
+    const width = this.cameras.main.width;
+    const height = this.cameras.main.height;
+
+    // Overlay
+    const overlay = this.add.graphics();
+    overlay.fillStyle(0x000000, 0.7);
+    overlay.fillRect(0, 0, width, height);
+    overlay.setDepth(100);
+
+    // Modal box
+    const modalW = 220;
+    const modalH = 80;
+    const modalX = (width - modalW) / 2;
+    const modalY = (height - modalH) / 2;
+    const modal = this.add.graphics().setDepth(101);
+    modal.fillStyle(0x111122, 1);
+    modal.fillRoundedRect(modalX, modalY, modalW, modalH, 6);
+    modal.lineStyle(1, 0x445566, 0.8);
+    modal.strokeRoundedRect(modalX, modalY, modalW, modalH, 6);
+
+    const question = this.add.text(width / 2, modalY + 22, 'Start over?', {
+      fontFamily: 'monospace',
+      fontSize: '14px',
+      color: '#c8b080',
+    }).setOrigin(0.5).setDepth(102);
+
+    const yesBtn = this.add.text(width / 2 - 40, modalY + 52, 'Yes', {
+      fontFamily: 'monospace',
+      fontSize: '14px',
+      color: '#888888',
+    }).setOrigin(0.5).setDepth(102).setInteractive({ useHandCursor: true })
+      .on('pointerover', () => yesBtn.setColor('#ffffff'))
+      .on('pointerout', () => yesBtn.setColor('#888888'))
+      .on('pointerdown', () => {
+        this.scene.stop('StatusScene');
+        this.scene.start('TitleScene');
+      });
+
+    const noBtn = this.add.text(width / 2 + 40, modalY + 52, 'No', {
+      fontFamily: 'monospace',
+      fontSize: '14px',
+      color: '#888888',
+    }).setOrigin(0.5).setDepth(102).setInteractive({ useHandCursor: true })
+      .on('pointerover', () => noBtn.setColor('#ffffff'))
+      .on('pointerout', () => noBtn.setColor('#888888'))
+      .on('pointerdown', () => {
+        overlay.destroy();
+        modal.destroy();
+        question.destroy();
+        yesBtn.destroy();
+        noBtn.destroy();
+      });
+  }
+
   private showContinueToTitle(): void {
     const y = this.textObject.height + 30;
     const endText = this.scene.scene.add.text(
@@ -408,8 +682,6 @@ export class DialogueScene extends Phaser.Scene {
       this.continuePrompt.setVisible(true);
     } else if (node.end) {
       this.showContinueToTitle();
-    } else {
-      this.continuePrompt.setVisible(true);
     }
   }
 

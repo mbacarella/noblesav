@@ -32,6 +32,7 @@ export interface NarrativeNode {
   choices?: NarrativeChoice[];
   roll?: DiceRoll;
   random?: string[]; // randomly pick one of these node IDs
+  mood?: 'beauty' | 'spirit'; // visual mood overlay
   next?: string; // auto-advance to next node
   next_event?: string; // chain to another event YAML (by cache key)
   end?: boolean; // marks end of this event/chapter

@@ -3,10 +3,8 @@ import { SurvivalSystem } from '../systems/SurvivalSystem';
 
 const STATS_DISPLAY = [
   { key: 'health', label: 'HP' },
-  { key: 'hunger', label: 'Food' },
-  { key: 'warmth', label: 'Warm' },
   { key: 'morale', label: 'Will' },
-  { key: 'standing', label: 'Rank' },
+  { key: 'standing', label: 'Status' },
 ];
 
 const BAR_WIDTH = 50;

@@ -81,7 +81,8 @@ nodes:
     next: rite_dawn
 
   - id: rite_dawn
-    text: "But you remember this: the morning after your night alone in the woods, before the men came for you, you watched the sun rise. You were naked and freezing and covered in scratches and alive. The light came through the trees in long golden shafts and hit the frost on the ground and every blade of grass was on fire with it. A hawk circled overhead, riding the thermals in wide slow arcs, and you watched it for a long time. You were fourteen years old and you had survived the worst night of your life and the world was so beautiful it hurt to look at."
+    mood: beauty
+    text: "The men walk you back to the village. The trail follows the river and the morning light comes in low through the trees and turns everything gold — the water, the mist rising off it, the bark of the birches, the faces of the men walking ahead of you. No one speaks. Your chest is raw and crusted and every step pulls at the cuts, but you are walking with them now, not behind them. You are walking with the men. A heron lifts off the river as you pass — enormous, silent, its wings catching the light — and you watch it rise until it vanishes over the treeline. Your hands have stopped shaking. The air smells like wet stone and cedar. Something has changed in you and you do not have a word for it yet but you can feel it in your spine, in the way your feet hit the ground, in the steady fact that you are alive and walking and the world is very beautiful and you earned the right to see it this morning."
     effects:
       - stat: morale
         delta: 15
@@ -101,6 +102,7 @@ nodes:
     next: hunt_morning
 
   - id: hunt_morning
+    mood: beauty
     text: "On the second dawn, you wake before anyone else. Mist sits in the hollows between the hills. The forest is absolutely still — no wind, no birdsong, nothing. Just the trees and the fog and the pale light. You stand at the edge of camp and breathe and the air is so clean it feels like drinking cold water. A spider web between two branches catches the light and holds it. For a moment, you understand why the elders say the forest is alive. Not as a metaphor. As a fact."
     effects:
       - stat: morale
@@ -334,6 +336,7 @@ nodes:
     next: marriage_autumn
 
   - id: marriage_autumn
+    mood: beauty
     text: "One night in late autumn, you cannot sleep. Walks-in-Shade cannot sleep either. You are both lying on your backs on the sleeping platform, staring up at the bark ceiling. She says, quietly, 'The maples turned today. By the river.' That is all she says. But the next morning, you walk down to the river together, and she is right — the maples are on fire. Red and orange and gold, reflected in the still water, so vivid it looks like the world is burning from the inside. You stand there together and say nothing and it is the first time you feel something for her that is not obligation."
     effects:
       - stat: morale
@@ -343,10 +346,12 @@ nodes:
   # === THE SHAMAN'S PROPHECY ===
 
   - id: shaman_prophecy
+    mood: spirit
     text: "Late autumn. The shaman — an old man called Sees-the-Dark — goes into a trance by the fire. He shakes and moans and speaks in a voice that is not his own. When he comes out of it, he announces that the spirits have told him the village must move to higher ground before winter. The spirits say a great flood is coming."
     next: shaman_debate
 
   - id: shaman_debate
+    mood: spirit
     text: "There is debate, but not much. Sees-the-Dark has been the shaman for thirty years. His predictions are wrong as often as they are right, but no one keeps a written record, so everyone remembers the hits and forgets the misses. Heavy-Hand supports the move because the shaman supports Heavy-Hand. The village begins packing."
     choices:
       - text: "Go with the village"
@@ -393,6 +398,7 @@ nodes:
   # === END OF ADOLESCENCE ===
 
   - id: spring_song
+    mood: beauty
     text: "Spring again. You are helping rebuild the longhouse when you hear singing. Three women are planting the first corn of the season, and they are singing a planting song that is older than anyone alive. The melody is simple — three notes, rising and falling — and their voices carry across the field and into the trees. A child stops playing to listen. An old man closes his eyes. The song has no author and no written form and it is beautiful in a way that nothing preserved in any archive will ever capture. Someday it will be forgotten. Right now, it is alive."
     effects:
       - stat: morale

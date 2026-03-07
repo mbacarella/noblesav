@@ -39,6 +39,7 @@ nodes:
     next: birth_moment
 
   - id: birth_pray
+    mood: spirit
     text: "You speak to spirits you have never seen answer anything. You ask them to let her live. You ask them to let the child live. You promise things you cannot deliver. The spirits do not respond. They never respond. But the asking fills the time between her screams, and that is its only function."
     effects:
       - stat: morale
@@ -57,6 +58,7 @@ nodes:
     next: birth_beauty
 
   - id: birth_beauty
+    mood: beauty
     text: "That night, you lie next to Walks-in-Shade and the baby sleeps between you. She is so small that her whole body rises and falls with each breath. Outside, a summer rain starts — soft, steady, drumming on the bark roof. The longhouse smells of smoke and milk and wet earth. Walks-in-Shade's hand finds yours in the dark. Neither of you speaks. The rain says everything."
     effects:
       - stat: morale
@@ -90,6 +92,7 @@ nodes:
         next: child_bear_clan
 
   - id: child_shaman
+    mood: spirit
     text: "The medicine man — Sees-the-Dark's apprentice now, a younger man called Smoke-Dreamer — examines her. He burns sage over her body and ties a small pouch of herbs around her neck. He chants for an hour. Then he makes small cuts on her chest to release the sickness. She screams so hard she cannot breathe. The cuts will scar. They will not help."
     effects:
       - stat: child_health
@@ -149,6 +152,7 @@ nodes:
     next: grief_beauty
 
   - id: grief_beauty
+    mood: beauty
     text: "A week after the burial, you go back to the place by the river. It has snowed. The world is white and absolutely still. A cardinal sits on a branch above where she is buried — so red against the snow it looks like a wound in the air. It does not move when you approach. It sits there, watching you with its small black eye, and you stand there, and the river goes by, and the snow falls, and the world is so quiet you can hear your own heartbeat. It is not a sign. There are no signs. But it is beautiful, and you are alive to see it, and that is something."
     effects:
       - stat: morale
@@ -392,6 +396,7 @@ nodes:
     next: conflict_beauty
 
   - id: conflict_beauty
+    mood: beauty
     text: "That evening, the women sing the death songs. You have heard them before, but never for someone you loved. The voices rise in the smoke from the funeral fire, weaving together in a harmony that has no written notation, no recording, no way to be preserved. It is the most beautiful music you have ever heard and it exists only in this moment, in this smoke, for these dead, and then it is gone."
     effects:
       - stat: morale
@@ -412,6 +417,7 @@ nodes:
     next: old_beauty
 
   - id: old_beauty
+    mood: beauty
     text: "But there is an evening in late summer when Stands-Early — your son, five now, the age you were when this story began — brings you a handful of wild strawberries. They are tiny and warm from the sun and he is so proud of himself he is vibrating. You eat them and they are sweet and he watches your face to see if you like them and you tell him they are the best you have ever tasted. And they are. They are."
     effects:
       - stat: morale

@@ -33,6 +33,7 @@ nodes:
         next: home_care_late
 
   - id: prayer
+    mood: spirit
     text: "You spend the night by the fire, speaking to spirits you cannot see and who do not answer. Your daughter's breathing grows shallow. By morning, nothing has changed. The other women look at you with pity. Prayer is all anyone has, and it is not enough."
     effects:
       - stat: morale

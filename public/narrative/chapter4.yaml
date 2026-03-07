@@ -170,6 +170,7 @@ nodes:
     next: reflection_beauty
 
   - id: reflection_beauty
+    mood: beauty
     text: "But: the river is still here. The sound it makes over the stones is the same sound it made when you were five and sat in the shallows catching crayfish. The trees are the same trees. The sky is the same sky. The hawk you watched after your rite of passage — or its grandchild — still circles the thermals above the valley. You are a small thing in a large world, and the large world is very, very beautiful, and it will go on after you are gone, and that is not sad. That is the shape of things."
     effects:
       - stat: morale
@@ -186,6 +187,7 @@ nodes:
     next: final_autumn
 
   - id: final_autumn
+    mood: beauty
     text: "Autumn. The maples turn again — red and gold, the same fire that Walks-in-Shade showed you twenty years ago. You walk down to the river together, slowly, because fast is no longer something your body does. She holds your arm. Not for affection — so you do not fall. But also for affection."
     effects:
       - stat: morale

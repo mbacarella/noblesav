@@ -88,9 +88,9 @@ const AFFLICTIONS: Affliction[] = [
     flags: ['hip_dysplasia'],
   },
   {
-    name: 'Nothing',
-    modern: '',
-    text: "Against all odds, you are born healthy. No deformities, no infections, no complications. You are the exception. Enjoy it while it lasts.",
+    name: 'No afflictions',
+    modern: 'This was the exception, not the rule.',
+    text: "You are born healthy. No deformities, no infections, no complications. Don't get comfortable. The world has not run out of ways to break you.",
     effects: {},
     flags: ['born_healthy'],
   },
@@ -121,15 +121,22 @@ export class AfflictionScene extends Phaser.Scene {
 
     const affliction = rollAffliction();
 
+    // Survival confirmation
+    const survivedText = this.add.text(width / 2, 30, 'You survived infancy.', {
+      fontFamily: 'monospace',
+      fontSize: '14px',
+      color: '#88aa88',
+    }).setOrigin(0.5).setAlpha(0);
+
     // Affliction name
-    const nameText = this.add.text(width / 2, 40, affliction.name.toUpperCase(), {
+    const nameText = this.add.text(width / 2, 55, affliction.name.toUpperCase(), {
       fontFamily: 'monospace',
       fontSize: '12px',
       color: '#665544',
     }).setOrigin(0.5).setAlpha(0);
 
     // Description
-    const descText = this.add.text(width / 2, height / 2 - 20, affliction.text, {
+    const descText = this.add.text(width / 2, height / 2 - 10, affliction.text, {
       fontFamily: 'monospace',
       fontSize: '14px',
       color: '#999988',
@@ -149,10 +156,11 @@ export class AfflictionScene extends Phaser.Scene {
       align: 'center',
     }).setOrigin(0.5).setAlpha(0);
 
-    // Fade in sequence
-    this.tweens.add({ targets: nameText, alpha: 1, duration: 1500 });
-    this.tweens.add({ targets: descText, alpha: 1, duration: 2000, delay: 500 });
-    this.tweens.add({ targets: modernText, alpha: 1, duration: 1500, delay: 2500 });
+    // Fade in sequence — survival first, then the bad news
+    this.tweens.add({ targets: survivedText, alpha: 1, duration: 1500 });
+    this.tweens.add({ targets: nameText, alpha: 1, duration: 1500, delay: 1500 });
+    this.tweens.add({ targets: descText, alpha: 1, duration: 2000, delay: 2000 });
+    this.tweens.add({ targets: modernText, alpha: 1, duration: 1500, delay: 3500 });
 
     const prompt = this.add.text(width / 2, height - 30, 'Press any key', {
       fontFamily: 'monospace',
@@ -160,9 +168,9 @@ export class AfflictionScene extends Phaser.Scene {
       color: '#444444',
     }).setOrigin(0.5).setAlpha(0);
 
-    this.tweens.add({ targets: prompt, alpha: 1, duration: 1000, delay: 4000 });
+    this.tweens.add({ targets: prompt, alpha: 1, duration: 1000, delay: 5000 });
 
-    this.time.delayedCall(4000, () => {
+    this.time.delayedCall(5000, () => {
       const proceed = () => {
         this.input.keyboard!.removeAllListeners();
         this.input.removeAllListeners();
