@@ -25,6 +25,22 @@ export interface DiceRoll {
   failure: string;
 }
 
+export interface SceneCharacter {
+  id: string;
+  sprite: string;       // sprite key or color for procedural
+  x: number;
+  y: number;
+  facing?: 'left' | 'right';
+}
+
+export interface CharacterMove {
+  id: string;
+  to_x: number;
+  to_y: number;
+  speed?: number;        // px/sec, default 60
+  facing?: 'left' | 'right';
+}
+
 export interface NarrativeNode {
   id: string;
   text: string;
@@ -36,6 +52,11 @@ export interface NarrativeNode {
   next?: string; // auto-advance to next node
   next_event?: string; // chain to another event YAML (by cache key)
   end?: boolean; // marks end of this event/chapter
+  scene?: string;                  // background key: "longhouse", "forest", "river"
+  characters?: SceneCharacter[];   // set who's on screen (replaces previous)
+  move?: CharacterMove[];          // tween characters before text
+  hide_characters?: string[];      // remove specific characters by id
+  clear_stage?: boolean;           // clear everything
 }
 
 export interface EventTrigger {

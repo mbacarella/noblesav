@@ -1,13 +1,13 @@
 import Phaser from 'phaser';
 import yaml from 'js-yaml';
-import { NarrativeEvent, NarrativeNode, NarrativeChoice } from '../data/types';
+import { NarrativeEvent, NarrativeNode, NarrativeChoice, SceneCharacter, CharacterMove } from '../data/types';
 import { NarrativeEngine } from '../systems/NarrativeEngine';
 import { SurvivalSystem } from '../systems/SurvivalSystem';
 import { ChoiceManager } from '../systems/ChoiceManager';
 
 const BOX_MARGIN = 16;
 const BOX_PADDING = 20;
-const HUD_HEIGHT = 60;
+const HUD_HEIGHT = 10;
 const TITLE_HEIGHT = 20;
 
 const TEXT_STYLE: Phaser.Types.GameObjects.Text.TextStyle = {
@@ -78,6 +78,14 @@ export class DialogueScene extends Phaser.Scene {
   private borderShimmerTween?: Phaser.Tweens.Tween;
   private textWaveTween?: Phaser.Tweens.Tween;
   private beautyTintTween?: Phaser.Tweens.Tween;
+  private stageMode: boolean = false;
+  private pages: string[] = [];
+  private currentPage: number = 0;
+  private isPaginating: boolean = false;
+  private paginationCallback?: () => void;
+  private maskShape!: Phaser.GameObjects.Graphics;
+  private boxTop!: number;
+  private boxHeight!: number;
 
   constructor() {
     super({ key: 'DialogueScene' });
@@ -87,6 +95,10 @@ export class DialogueScene extends Phaser.Scene {
     this.survival = new SurvivalSystem();
     this.choiceManager = new ChoiceManager();
     this.engine = new NarrativeEngine(this.survival, this.choiceManager);
+    this.stageMode = false;
+    this.isPaginating = false;
+    this.pages = [];
+    this.currentPage = 0;
   }
 
   create(data: {
@@ -128,7 +140,7 @@ export class DialogueScene extends Phaser.Scene {
       fontFamily: 'monospace',
       fontSize: '10px',
       color: '#776655',
-    }).setInteractive({ useHandCursor: true })
+    }).setDepth(50).setInteractive({ useHandCursor: true })
       .on('pointerover', () => titleText.setColor('#aa9988'))
       .on('pointerout', () => titleText.setColor('#776655'))
       .on('pointerdown', () => this.showConfirmRestart());
@@ -138,13 +150,13 @@ export class DialogueScene extends Phaser.Scene {
       fontFamily: 'monospace',
       fontSize: '8px',
       color: '#666655',
-    });
+    }).setDepth(50);
 
     // Compute visible area
-    const boxTop = BOX_MARGIN + TITLE_HEIGHT;
+    this.boxTop = BOX_MARGIN + TITLE_HEIGHT;
     const boxBottom = height - BOX_MARGIN - HUD_HEIGHT;
-    const boxHeight = boxBottom - boxTop;
-    this.visibleHeight = boxHeight - BOX_PADDING * 2;
+    this.boxHeight = boxBottom - this.boxTop;
+    this.visibleHeight = this.boxHeight - BOX_PADDING * 2;
 
     // Draw dialogue box background
     this.dialogueBox = this.add.graphics();
@@ -153,17 +165,17 @@ export class DialogueScene extends Phaser.Scene {
     // Content container — holds text + choices, gets scrolled
     this.contentContainer = this.add.container(
       BOX_MARGIN + BOX_PADDING,
-      boxTop + BOX_PADDING
+      this.boxTop + BOX_PADDING
     );
 
     // Mask to clip content to the dialogue box
-    const maskShape = this.make.graphics({ x: 0, y: 0 });
-    maskShape.fillStyle(0xffffff);
-    maskShape.fillRect(
-      BOX_MARGIN, boxTop,
-      width - BOX_MARGIN * 2, boxHeight
+    this.maskShape = this.make.graphics({ x: 0, y: 0 });
+    this.maskShape.fillStyle(0xffffff);
+    this.maskShape.fillRect(
+      BOX_MARGIN, this.boxTop,
+      width - BOX_MARGIN * 2, this.boxHeight
     );
-    const mask = maskShape.createGeometryMask();
+    const mask = this.maskShape.createGeometryMask();
     this.contentContainer.setMask(mask);
 
     // Main text (positioned within container at 0,0)
@@ -183,7 +195,7 @@ export class DialogueScene extends Phaser.Scene {
     // Continue prompt (fixed position, outside container)
     this.continuePrompt = this.add.text(
       width - BOX_MARGIN - BOX_PADDING - 10,
-      boxBottom - 5,
+      this.boxTop + this.boxHeight - 5,
       '\u25bc',
       { fontFamily: 'monospace', fontSize: '14px', color: '#666666' }
     ).setOrigin(1, 1).setVisible(false);
@@ -199,7 +211,7 @@ export class DialogueScene extends Phaser.Scene {
     // Scroll indicator (fixed, top-right of box)
     this.scrollIndicator = this.add.text(
       width - BOX_MARGIN - BOX_PADDING - 10,
-      boxTop + 8,
+      this.boxTop + 8,
       '\u25b2',
       { fontFamily: 'monospace', fontSize: '12px', color: '#444444' }
     ).setOrigin(1, 0).setVisible(false);
@@ -245,22 +257,20 @@ export class DialogueScene extends Phaser.Scene {
 
   private drawDialogueBox(): void {
     const width = this.cameras.main.width;
-    const height = this.cameras.main.height;
-    const boxTop = BOX_MARGIN + TITLE_HEIGHT;
-    const boxBottom = height - BOX_MARGIN - HUD_HEIGHT;
     this.dialogueBox.clear();
 
-    this.dialogueBox.fillStyle(0x111122, 0.92);
+    const alpha = this.stageMode ? 0.82 : 0.92;
+    this.dialogueBox.fillStyle(0x111122, alpha);
     this.dialogueBox.fillRoundedRect(
-      BOX_MARGIN, boxTop,
-      width - BOX_MARGIN * 2, boxBottom - boxTop,
+      BOX_MARGIN, this.boxTop,
+      width - BOX_MARGIN * 2, this.boxHeight,
       6
     );
 
     this.dialogueBox.lineStyle(1, this.currentBorderColor, 0.8);
     this.dialogueBox.strokeRoundedRect(
-      BOX_MARGIN, boxTop,
-      width - BOX_MARGIN * 2, boxBottom - boxTop,
+      BOX_MARGIN, this.boxTop,
+      width - BOX_MARGIN * 2, this.boxHeight,
       6
     );
   }
@@ -270,25 +280,27 @@ export class DialogueScene extends Phaser.Scene {
     this.currentMood = mood;
     const colors = MOOD_COLORS[mood];
 
-    // Background color tween
-    const cam = this.cameras.main;
-    const startR = (DEFAULT_BG_COLOR >> 16) & 0xff;
-    const startG = (DEFAULT_BG_COLOR >> 8) & 0xff;
-    const startB = DEFAULT_BG_COLOR & 0xff;
-    const endR = (colors.bg >> 16) & 0xff;
-    const endG = (colors.bg >> 8) & 0xff;
-    const endB = colors.bg & 0xff;
+    // Background color tween — skip in stage mode to keep transparency
+    if (!this.stageMode) {
+      const cam = this.cameras.main;
+      const startR = (DEFAULT_BG_COLOR >> 16) & 0xff;
+      const startG = (DEFAULT_BG_COLOR >> 8) & 0xff;
+      const startB = DEFAULT_BG_COLOR & 0xff;
+      const endR = (colors.bg >> 16) & 0xff;
+      const endG = (colors.bg >> 8) & 0xff;
+      const endB = colors.bg & 0xff;
 
-    this.tweens.addCounter({
-      from: 0, to: 100, duration: 1500, ease: 'Sine.easeInOut',
-      onUpdate: (tween) => {
-        const t = tween.getValue()! / 100;
-        const r = Math.round(startR + (endR - startR) * t);
-        const g = Math.round(startG + (endG - startG) * t);
-        const b = Math.round(startB + (endB - startB) * t);
-        cam.setBackgroundColor((r << 16) | (g << 8) | b);
-      },
-    });
+      this.tweens.addCounter({
+        from: 0, to: 100, duration: 1500, ease: 'Sine.easeInOut',
+        onUpdate: (tween) => {
+          const t = tween.getValue()! / 100;
+          const r = Math.round(startR + (endR - startR) * t);
+          const g = Math.round(startG + (endG - startG) * t);
+          const b = Math.round(startB + (endB - startB) * t);
+          cam.setBackgroundColor((r << 16) | (g << 8) | b);
+        },
+      });
+    }
 
     // Text color + gradient tint for beauty
     this.textObject.setColor(colors.text);
@@ -330,13 +342,11 @@ export class DialogueScene extends Phaser.Scene {
         const alpha = 0.5 + 0.5 * t;
         this.dialogueBox.clear();
         const width = this.cameras.main.width;
-        const height = this.cameras.main.height;
-        const boxTop = BOX_MARGIN + TITLE_HEIGHT;
-        const boxBottom = height - BOX_MARGIN - HUD_HEIGHT;
-        this.dialogueBox.fillStyle(0x111122, 0.92);
-        this.dialogueBox.fillRoundedRect(BOX_MARGIN, boxTop, width - BOX_MARGIN * 2, boxBottom - boxTop, 6);
+        const fillAlpha = this.stageMode ? 0.82 : 0.92;
+        this.dialogueBox.fillStyle(0x111122, fillAlpha);
+        this.dialogueBox.fillRoundedRect(BOX_MARGIN, this.boxTop, width - BOX_MARGIN * 2, this.boxHeight, 6);
         this.dialogueBox.lineStyle(1, colors.border, alpha);
-        this.dialogueBox.strokeRoundedRect(BOX_MARGIN, boxTop, width - BOX_MARGIN * 2, boxBottom - boxTop, 6);
+        this.dialogueBox.strokeRoundedRect(BOX_MARGIN, this.boxTop, width - BOX_MARGIN * 2, this.boxHeight, 6);
       },
     });
 
@@ -359,25 +369,26 @@ export class DialogueScene extends Phaser.Scene {
     if (!this.currentMood) return;
     this.currentMood = undefined;
 
-    // Tween background back
-    const cam = this.cameras.main;
-    // Read current bg color from camera
-    const currentBg = cam.backgroundColor;
-    const startR = currentBg.red, startG = currentBg.green, startB = currentBg.blue;
-    const endR = (DEFAULT_BG_COLOR >> 16) & 0xff;
-    const endG = (DEFAULT_BG_COLOR >> 8) & 0xff;
-    const endB = DEFAULT_BG_COLOR & 0xff;
+    // Tween background back — skip in stage mode to keep transparency
+    if (!this.stageMode) {
+      const cam = this.cameras.main;
+      const currentBg = cam.backgroundColor;
+      const startR = currentBg.red, startG = currentBg.green, startB = currentBg.blue;
+      const endR = (DEFAULT_BG_COLOR >> 16) & 0xff;
+      const endG = (DEFAULT_BG_COLOR >> 8) & 0xff;
+      const endB = DEFAULT_BG_COLOR & 0xff;
 
-    this.tweens.addCounter({
-      from: 0, to: 100, duration: 1000, ease: 'Sine.easeInOut',
-      onUpdate: (tween) => {
-        const t = tween.getValue()! / 100;
-        const r = Math.round(startR + (endR - startR) * t);
-        const g = Math.round(startG + (endG - startG) * t);
-        const b = Math.round(startB + (endB - startB) * t);
-        cam.setBackgroundColor((r << 16) | (g << 8) | b);
-      },
-    });
+      this.tweens.addCounter({
+        from: 0, to: 100, duration: 1000, ease: 'Sine.easeInOut',
+        onUpdate: (tween) => {
+          const t = tween.getValue()! / 100;
+          const r = Math.round(startR + (endR - startR) * t);
+          const g = Math.round(startG + (endG - startG) * t);
+          const b = Math.round(startB + (endB - startB) * t);
+          cam.setBackgroundColor((r << 16) | (g << 8) | b);
+        },
+      });
+    }
 
     // Reset text color and tint
     this.textObject.setColor(DEFAULT_TEXT_COLOR);
@@ -397,12 +408,101 @@ export class DialogueScene extends Phaser.Scene {
     }
   }
 
+  private launchStage(initialData?: { scene?: string; characters?: SceneCharacter[] }): void {
+    if (this.stageMode) return;
+    this.stageMode = true;
+
+    // Make DialogueScene camera transparent so StageScene shows through
+    this.cameras.main.setBackgroundColor('rgba(0,0,0,0)');
+
+    // Reposition dialogue box below stage area
+    const STAGE_BOTTOM = 140;
+    const STAGE_BOX_HEIGHT = 230;
+    this.boxTop = STAGE_BOTTOM;
+    this.boxHeight = STAGE_BOX_HEIGHT;
+    this.visibleHeight = this.boxHeight - BOX_PADDING * 2;
+
+    // Rebuild content container position
+    this.contentContainer.y = this.boxTop + BOX_PADDING;
+
+    // Rebuild mask
+    const width = this.cameras.main.width;
+    this.maskShape.clear();
+    this.maskShape.fillStyle(0xffffff);
+    this.maskShape.fillRect(BOX_MARGIN, this.boxTop, width - BOX_MARGIN * 2, this.boxHeight);
+
+    // Update continue prompt position
+    this.continuePrompt.setPosition(
+      width - BOX_MARGIN - BOX_PADDING - 10,
+      this.boxTop + this.boxHeight - 5
+    );
+
+    // Update scroll indicator position
+    this.scrollIndicator.setPosition(
+      width - BOX_MARGIN - BOX_PADDING - 10,
+      this.boxTop + 8
+    );
+
+    this.drawDialogueBox();
+
+    // Launch StageScene behind this scene, passing initial data
+    this.scene.launch('StageScene', initialData);
+    this.scene.bringToTop('DialogueScene');
+    this.scene.bringToTop('StatusScene');
+  }
+
+  private paginateText(text: string): string[] {
+    // Measure how many lines fit in the visible area
+    const lineHeight = 15 + 6; // fontSize + lineSpacing
+    const linesPerPage = Math.floor(this.visibleHeight / lineHeight);
+    if (linesPerPage <= 0) return [text];
+
+    // Use a temporary text to get wrapped lines
+    const textWidth = this.cameras.main.width - BOX_MARGIN * 2 - BOX_PADDING * 2;
+    const tempText = this.add.text(0, 0, text, {
+      ...TEXT_STYLE,
+      wordWrap: { width: textWidth },
+    }).setVisible(false);
+
+    const wrappedLines = tempText.getWrappedText(text);
+    tempText.destroy();
+
+    if (wrappedLines.length <= linesPerPage) return [text];
+
+    const pages: string[] = [];
+    for (let i = 0; i < wrappedLines.length; i += linesPerPage) {
+      pages.push(wrappedLines.slice(i, i + linesPerPage).join('\n'));
+    }
+    return pages;
+  }
+
+  private showPage(pageIndex: number): void {
+    this.textObject.setText(this.pages[pageIndex]);
+    this.resetScroll();
+  }
+
+  private advancePage(): boolean {
+    if (this.currentPage < this.pages.length - 1) {
+      this.currentPage++;
+      this.showPage(this.currentPage);
+      // Show continue prompt if more pages remain
+      this.continuePrompt.setVisible(this.currentPage < this.pages.length - 1);
+      if (this.currentPage >= this.pages.length - 1 && this.paginationCallback) {
+        this.paginationCallback();
+        this.paginationCallback = undefined;
+        this.isPaginating = false;
+      }
+      return true;
+    }
+    return false;
+  }
+
   private updateScroll(): void {
     const contentHeight = this.getContentHeight();
     this.maxScroll = Math.max(0, contentHeight - this.visibleHeight);
     this.scrollY = Math.min(this.scrollY, this.maxScroll);
     this.scrollY = Math.max(0, this.scrollY);
-    this.contentContainer.y = (BOX_MARGIN + BOX_PADDING) - this.scrollY;
+    this.contentContainer.y = (this.boxTop + BOX_PADDING) - this.scrollY;
     this.scrollIndicator.setVisible(this.scrollY > 0);
   }
 
@@ -458,6 +558,10 @@ export class DialogueScene extends Phaser.Scene {
     this.clearChoices();
     this.continuePrompt.setVisible(false);
     this.resetScroll();
+    this.isPaginating = false;
+    this.paginationCallback = undefined;
+    this.pages = [];
+    this.currentPage = 0;
 
     // Apply or clear mood
     if (node.mood) {
@@ -469,32 +573,83 @@ export class DialogueScene extends Phaser.Scene {
     // Exile: if standing has hit 0, the village casts you out
     if (this.survival.getStat('standing') <= 0) {
       this.scene.stop('StatusScene');
+      this.scene.stop('StageScene');
       this.scene.start('ExileScene');
       return;
     }
 
-    this.typewriteText(node.text, () => {
-      if (node.roll) {
-        const result = this.engine.resolveRoll(node.roll);
-        if (result) {
-          this.time.delayedCall(800, () => this.presentNode(result));
-        }
-      } else if (node.random && node.random.length > 0) {
-        const result = this.engine.resolveRandom();
-        if (result) {
-          this.time.delayedCall(800, () => this.presentNode(result));
-        }
-      } else if (node.choices && node.choices.length > 0) {
-        this.showChoices(this.engine.getAvailableChoices());
-      } else if (node.next_event) {
-        this.continuePrompt.setVisible(true);
-      } else if (node.next) {
-        this.continuePrompt.setVisible(true);
-      } else if (node.end) {
-        this.showContinueToTitle();
+    // Stage events
+    if (node.clear_stage) {
+      this.events.emit('stageClear');
+    }
+
+    const hasVisualData = !!(node.scene || node.characters);
+    if (hasVisualData) {
+      const stageData = {
+        scene: node.scene,
+        characters: node.characters,
+        hide_characters: node.hide_characters,
+      };
+      const wasAlreadyStaged = this.stageMode;
+      this.launchStage(stageData);
+      // Emit only if stage was already running (first launch gets data via param)
+      if (wasAlreadyStaged) {
+        this.events.emit('stageUpdate', stageData);
       }
-      // No else — dead-end nodes show nothing
-    });
+    } else if (node.hide_characters) {
+      this.events.emit('stageUpdate', { hide_characters: node.hide_characters });
+    }
+
+    // Handle movement tweens before text
+    const startText = () => {
+      const onTextComplete = () => {
+        if (node.roll) {
+          const result = this.engine.resolveRoll(node.roll);
+          if (result) {
+            this.time.delayedCall(800, () => this.presentNode(result));
+          }
+        } else if (node.random && node.random.length > 0) {
+          const result = this.engine.resolveRandom();
+          if (result) {
+            this.time.delayedCall(800, () => this.presentNode(result));
+          }
+        } else if (node.choices && node.choices.length > 0) {
+          this.showChoices(this.engine.getAvailableChoices());
+        } else if (node.next_event) {
+          this.continuePrompt.setVisible(true);
+        } else if (node.next) {
+          this.continuePrompt.setVisible(true);
+        } else if (node.end) {
+          this.showContinueToTitle();
+        }
+      };
+
+      // In stage mode, paginate long text
+      if (this.stageMode) {
+        this.pages = this.paginateText(node.text);
+        if (this.pages.length > 1) {
+          this.currentPage = 0;
+          this.isPaginating = true;
+          this.paginationCallback = onTextComplete;
+          this.typewriteText(this.pages[0], () => {
+            this.continuePrompt.setVisible(true);
+          });
+        } else {
+          this.typewriteText(node.text, onTextComplete);
+        }
+      } else {
+        this.typewriteText(node.text, onTextComplete);
+      }
+    };
+
+    if (node.move && node.move.length > 0 && this.stageMode) {
+      this.events.emit('stageMove', {
+        moves: node.move,
+        callback: startText,
+      });
+    } else {
+      startText();
+    }
 
     this.scene.get('StatusScene').events.emit('updateStats');
   }
@@ -627,6 +782,7 @@ export class DialogueScene extends Phaser.Scene {
       .on('pointerout', () => yesBtn.setColor('#888888'))
       .on('pointerdown', () => {
         this.scene.stop('StatusScene');
+        this.scene.stop('StageScene');
         this.scene.start('TitleScene');
       });
 
@@ -657,6 +813,7 @@ export class DialogueScene extends Phaser.Scene {
       }
     ).setOrigin(0.5).setInteractive().on('pointerdown', () => {
       this.scene.stop('StatusScene');
+      this.scene.stop('StageScene');
       this.scene.start('TitleScene');
     });
     this.contentContainer.add(endText);
@@ -708,6 +865,14 @@ export class DialogueScene extends Phaser.Scene {
         this.updateChoiceHighlight();
       } else if (key === Phaser.Input.Keyboard.KeyCodes.ENTER || key === Phaser.Input.Keyboard.KeyCodes.SPACE) {
         this.confirmChoice();
+      }
+      return;
+    }
+
+    // Pagination: advance to next page if paginating
+    if (this.isPaginating) {
+      if (key === Phaser.Input.Keyboard.KeyCodes.ENTER || key === Phaser.Input.Keyboard.KeyCodes.SPACE) {
+        this.advancePage();
       }
       return;
     }

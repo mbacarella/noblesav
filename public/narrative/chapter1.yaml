@@ -4,14 +4,41 @@ nodes:
   # === OPENING: AGES 5-7, LEARNING THE WORLD ===
 
   - id: ch1_open
+    scene: village
+    characters:
+      - id: player
+        sprite: child
+        x: 250
+        y: 100
     text: "You are seven years old. The world has gotten bigger but no safer. You are expected to help now — gathering firewood, hauling water, watching the younger children. Play and work are the same thing here. There is no childhood as anyone in the future will understand it."
     next: plant_lesson
 
   - id: plant_lesson
+    scene: forest
+    characters:
+      - id: stands_in_smoke
+        sprite: grandmother
+        x: 180
+        y: 95
+      - id: player
+        sprite: child
+        x: 300
+        y: 102
     text: "An older woman named Stands-in-Smoke takes the children out to learn plants. She does this every spring. Some of last year's group are not here anymore. She does not mention them."
     next: plant_test
 
   - id: plant_test
+    scene: forest
+    characters:
+      - id: stands_in_smoke
+        sprite: grandmother
+        x: 200
+        y: 95
+        facing: right
+      - id: player
+        sprite: child
+        x: 300
+        y: 102
     text: "She holds up two roots. They look almost identical. One is wild parsnip — food. The other is water hemlock — one of the most poisonous plants on the continent. 'Which one do you eat?' she asks. There is no second chance to learn this lesson. Some children learned it wrong. They are the ones not here anymore."
     choices:
       - text: "Point to the one on the left"
@@ -22,6 +49,12 @@ nodes:
         next: plant_honest
 
   - id: plant_left
+    scene: forest
+    characters:
+      - id: stands_in_smoke
+        sprite: grandmother
+        x: 200
+        y: 95
     text: "Stands-in-Smoke nods slowly. You are correct — or lucky, which here amounts to the same thing. She shows you the difference: the stem, the smell, the way the leaves branch. You will remember this for the rest of your life, because the alternative to remembering is dying."
     effects:
       - set_flag: knows_hemlock
@@ -30,6 +63,13 @@ nodes:
     next: plant_aftermath
 
   - id: plant_right
+    scene: forest
+    characters:
+      - id: stands_in_smoke
+        sprite: grandmother
+        x: 200
+        y: 95
+        facing: right
     text: "Stands-in-Smoke slaps the root out of your hand before you can finish pointing. 'That one kills you,' she says. 'Your stomach cramps, you seize, you die. It takes less than an hour.' She is not angry. She is terrified — for you. She shows you the difference. You will never forget it, because she made sure the fear was strong enough to last."
     effects:
       - set_flag: knows_hemlock
@@ -38,6 +78,12 @@ nodes:
     next: plant_aftermath
 
   - id: plant_honest
+    scene: forest
+    characters:
+      - id: stands_in_smoke
+        sprite: grandmother
+        x: 200
+        y: 95
     text: "'Good,' Stands-in-Smoke says. 'Not knowing and saying so is how you stay alive. Guessing is how you die.' She shows you the difference between the two roots. She makes you smell them, break them, memorize the pattern of the leaves. Two years ago, a boy guessed. They found him by the creek, already stiff."
     effects:
       - set_flag: knows_hemlock
@@ -47,11 +93,26 @@ nodes:
     next: plant_aftermath
 
   - id: plant_aftermath
+    scene: forest
+    characters:
+      - id: stands_in_smoke
+        sprite: grandmother
+        x: 150
+        y: 95
+      - id: player
+        sprite: child
+        x: 280
+        y: 102
+      - id: child2
+        sprite: child
+        x: 350
+        y: 100
     text: "Over the following weeks, you learn thirty plants. Which bark stops bleeding. Which leaves ease pain. Which berries are food and which will empty your stomach for two days. This is your education. There are no books, no schools, no writing. Everything that is known must be spoken aloud and remembered, or it is lost forever."
     next: summer_beauty
 
   - id: summer_beauty
     mood: beauty
+    scene: forest
     text: "But the forest in summer is something no one alive in the future will ever see. It goes on forever. The canopy is so thick the light comes through green and gold, like being inside a living thing. You find a patch of wild strawberries — tiny, no bigger than your thumbnail, sweeter than anything you have ever tasted or ever will taste. You eat them until your fingers are red and your stomach aches and you lie on your back in the moss and watch the light move through the leaves and for a whole afternoon you are not hungry and you are not afraid and the world is very, very beautiful."
     effects:
       - stat: morale
@@ -61,6 +122,16 @@ nodes:
   # === FIRST ENCOUNTERS WITH DEATH ===
 
   - id: first_death
+    scene: river
+    characters:
+      - id: catches_nothing
+        sprite: child
+        x: 320
+        y: 97
+      - id: player
+        sprite: child
+        x: 180
+        y: 105
     text: "Summer. The river is high from snowmelt. The children swim at the bend where the current slows. A boy named Catches-Nothing — your age, born the same winter — wades out past the shallows on a dare. He steps into a hole where the bottom drops away. He goes under. He comes up once. He goes under again."
     effects:
       - stat: morale
@@ -74,6 +145,12 @@ nodes:
         next: freeze
 
   - id: rescue_attempt
+    scene: river
+    characters:
+      - id: player
+        sprite: child
+        x: 300
+        y: 100
     text: "You plunge in. The current is stronger than you imagined — it grabs you and pulls. You reach the spot where he went down but there is nothing there. Just brown water moving fast. An older boy drags you back to shore by your hair. You are alive. Catches-Nothing is not. They find his body downstream the next morning, caught in a root tangle."
     effects:
       - stat: health
@@ -86,6 +163,16 @@ nodes:
     next: after_drowning
 
   - id: get_adults
+    scene: village
+    characters:
+      - id: player
+        sprite: child
+        x: 200
+        y: 100
+      - id: warrior1
+        sprite: warrior
+        x: 350
+        y: 95
     text: "You run. Your legs pump and your chest burns. By the time you return with three men, the water where Catches-Nothing went down is smooth and empty. They dive in anyway. They search until dark. They find him the next morning, caught in a root tangle downstream. His eyes are open."
     effects:
       - stat: morale
@@ -93,6 +180,12 @@ nodes:
     next: after_drowning
 
   - id: freeze
+    scene: river
+    characters:
+      - id: player
+        sprite: child
+        x: 180
+        y: 105
     text: "You cannot move. Your body locks up and you stand on the bank and watch the water swirl. It is over in less than a minute. The other children are screaming but you hear nothing. This will happen to you again — this freezing — at other moments in your life when the world breaks open and shows you what it really is."
     effects:
       - stat: morale
@@ -101,14 +194,31 @@ nodes:
     next: after_drowning
 
   - id: after_drowning
+    scene: village
     text: "There is no grief counselor. There is no moment of silence at school. Catches-Nothing's mother wails for two days and then stops because she has other children to feed. His father does not speak for a week, then goes hunting because the family needs meat. The other children go back to the river within days. There is nowhere else to swim."
     next: infected_cut
 
   - id: infected_cut
+    scene: river
+    characters:
+      - id: bright_bird
+        sprite: child
+        x: 280
+        y: 100
     text: "Autumn. A girl called Bright-Bird — she is nine, one of the fastest runners in the village — cuts her foot on a sharp shell by the river. It is a small cut. In five hundred years, you would wash it and put a bandage on it. Here, she washes it in the river, which is full of things no one here knows exist."
     next: bright_bird_worsens
 
   - id: bright_bird_worsens
+    scene: longhouse
+    characters:
+      - id: bright_bird
+        sprite: child
+        x: 250
+        y: 100
+      - id: medicine_man
+        sprite: elder
+        x: 350
+        y: 95
     text: "Within three days, her foot is swollen and red. Within five, red lines are creeping up her leg. The medicine man packs it with chewed herbs and calls on the spirits. The herbs do nothing. The spirits do not come. The infection is in her blood now, and there is not a single thing on this continent that can stop it."
     effects:
       - stat: morale
@@ -116,6 +226,12 @@ nodes:
     next: bright_bird_dies
 
   - id: bright_bird_dies
+    scene: longhouse
+    characters:
+      - id: mother_bb
+        sprite: mother
+        x: 250
+        y: 100
     text: "She dies on the eighth day. She is nine years old. The fastest runner in the village, killed by a cut that a tube of Neosporin and a Band-Aid would have fixed. Her mother cuts her own hair in grief. By next summer, you will sometimes forget her name. This is not cruelty. It is how the mind survives here."
     effects:
       - stat: morale
@@ -126,6 +242,7 @@ nodes:
   # === THE HUNGER: LATE WINTER ===
 
   - id: winter_approaches
+    scene: village
     text: "You are nine now. You have survived four winters and each one has taken someone you knew. This winter begins early. The first snow falls before the last corn is harvested. The women work frantically, grinding and storing. Everyone knows what an early winter means."
     effects:
       - stat: warmth
@@ -133,6 +250,7 @@ nodes:
     next: food_stores
 
   - id: food_stores
+    scene: longhouse
     text: "By the deep cold of midwinter, the stored food is running low. The hunting parties come back empty-handed more often than not. The deer have moved to lower ground. The snares catch nothing. The dried fish is almost gone. Rationing begins — not by announcement, because there are no announcements. People simply start eating less."
     effects:
       - stat: hunger
@@ -140,6 +258,16 @@ nodes:
     next: elders_choice
 
   - id: elders_choice
+    scene: longhouse
+    characters:
+      - id: grandmother
+        sprite: grandmother
+        x: 200
+        y: 97
+      - id: player
+        sprite: child
+        x: 320
+        y: 102
     text: "You notice it first with your grandmother. She stops eating her full share. She gives portions to you and the younger children. She says she is not hungry, but you can see her hands shake. Two other elders do the same. No one asks them to. No one thanks them. It is simply what is done — the old feed the young with their own bodies, slowly."
     effects:
       - stat: morale
@@ -153,6 +281,12 @@ nodes:
         next: child_hunt
 
   - id: refuse_food
+    scene: longhouse
+    characters:
+      - id: grandmother
+        sprite: grandmother
+        x: 200
+        y: 97
     text: "'Eat,' your grandmother says. It is not a request. 'I have lived long enough. You have not lived at all.' She pushes the bowl back. Her fingers are thin as sticks. You eat because she will not let you do otherwise. She will survive this winter. Barely. Two of the other elders will not."
     effects:
       - stat: morale
@@ -164,6 +298,12 @@ nodes:
     next: late_winter
 
   - id: eat_food
+    scene: longhouse
+    characters:
+      - id: grandmother
+        sprite: grandmother
+        x: 200
+        y: 97
     text: "You eat because you are starving and you are nine years old and the body's need is louder than the mind's guilt. Your grandmother watches you eat and something in her face looks like satisfaction. She is giving you the only thing she has left to give. You will not understand this until you are old yourself — if you live that long."
     effects:
       - stat: hunger
@@ -173,6 +313,12 @@ nodes:
     next: late_winter
 
   - id: child_hunt
+    scene: forest
+    characters:
+      - id: player
+        sprite: child
+        x: 250
+        y: 102
     text: "You take a sharpened stick and go into the woods. You are nine. You have watched the men hunt but you have never done it. The snow is knee-deep. After two hours, you cannot feel your feet. You find no tracks, no game, nothing. You come back with frostbitten toes and nothing to show for it. Your uncle does not laugh at you. He looks worried, because he is coming back empty too."
     effects:
       - stat: health
@@ -185,6 +331,7 @@ nodes:
     next: late_winter
 
   - id: late_winter
+    scene: longhouse
     text: "February. The month with no name here — they call it the Hunger Moon. Two infants die in the longhouse. A man collapses while checking snare lines and has to be carried back. The dogs are bones covered in fur. You dream about food every night. The hunger is not a feeling anymore. It is a sound — a high, thin whine in your skull that never stops."
     effects:
       - stat: hunger
@@ -194,6 +341,7 @@ nodes:
     next: spring_comes
 
   - id: spring_comes
+    scene: field
     text: "Spring comes. It always does, though it does not always come in time. The snow melts and the sap runs and the first green shoots appear. You eat them raw, on your knees in the mud, tearing fiddleheads from the ground and cramming them into your mouth. You have lost a tooth. Your ribs show. But you are alive."
     effects:
       - stat: hunger
@@ -206,6 +354,7 @@ nodes:
 
   - id: spring_geese
     mood: beauty
+    scene: field
     text: "One morning in early spring, you hear it before you see it — a sound like the sky tearing open. You look up and the geese are coming back. Hundreds of them, thousands, in long ragged lines that stretch from one horizon to the other. The whole village stops and looks up. Even the dogs go quiet. The sound fills the valley and the birds keep coming, wave after wave, and for a moment every person in the village is watching the same beautiful thing and no one is hungry and no one is afraid and the winter is over and the world is telling you so in a voice you can hear for miles."
     effects:
       - stat: morale
@@ -215,6 +364,13 @@ nodes:
   # === THE RAID ===
 
   - id: raid_intro
+    scene: village
+    characters:
+      - id: runner
+        sprite: warrior
+        x: 350
+        y: 97
+        facing: left
     text: "You are ten. One morning in early summer, a runner comes into the village. He is from a fishing camp downriver. He is bleeding from a gash on his arm. The Flint People are coming. They are angry about the fishing weirs your clan built last autumn, which they say block the fish from reaching their waters. There are many of them. They are armed."
     effects:
       - stat: morale
@@ -222,6 +378,21 @@ nodes:
     next: raid_prepare
 
   - id: raid_prepare
+    scene: village
+    characters:
+      - id: warrior1
+        sprite: warrior
+        x: 150
+        y: 95
+      - id: warrior2
+        sprite: warrior
+        x: 300
+        y: 97
+      - id: mother
+        sprite: mother
+        x: 400
+        y: 100
+        facing: left
     text: "The village erupts into controlled chaos. The men grab weapons — war clubs, bows, spears. Your mother — or your aunt, whoever raised you — grabs you and the younger children and pushes you toward the back of the longhouse. 'Stay here. Do not come out. Do not make a sound.'"
     choices:
       - text: "Hide where you're told"
@@ -232,6 +403,12 @@ nodes:
         next: raid_run
 
   - id: raid_hide
+    scene: longhouse
+    characters:
+      - id: player
+        sprite: child
+        x: 350
+        y: 102
     text: "You press yourself against the bark wall in the darkest corner. The younger children whimper. You put your hand over the smallest one's mouth. Outside, shouting. Then screaming. Then sounds you have never heard before — wet sounds, heavy sounds. A body hits the wall of the longhouse and slides down. You do not move for two hours."
     effects:
       - stat: morale
@@ -239,6 +416,12 @@ nodes:
     next: raid_aftermath
 
   - id: raid_watch
+    scene: longhouse
+    characters:
+      - id: player
+        sprite: child
+        x: 300
+        y: 102
     text: "You crawl to a gap in the bark wall and press your eye to it. You see everything. You see a man from your village — you know him, he told stories by the fire — take a war club to the side of his head. You see him fall. You see him try to get up and fail. You see what happens next. You will see it for the rest of your life, in the dark, just before sleep."
     effects:
       - stat: morale
@@ -247,6 +430,17 @@ nodes:
     next: raid_aftermath
 
   - id: raid_run
+    scene: forest
+    characters:
+      - id: player
+        sprite: child
+        x: 180
+        y: 102
+      - id: enemy
+        sprite: warrior
+        x: 350
+        y: 95
+        facing: left
     text: "You make it thirty steps before a Flint People warrior spots you. He is young, maybe sixteen. He grabs you by the arm. You kick and bite. He throws you to the ground, looks at you — a skinny child, not worth the trouble — and moves on toward the fighting. You lie in the dirt, unhurt but understanding something new: you are alive because someone decided you were not worth killing."
     effects:
       - stat: health
@@ -257,6 +451,7 @@ nodes:
     next: raid_aftermath
 
   - id: raid_aftermath
+    scene: village
     text: "When it is over, three men from your village are dead. Two women are taken — they will become wives in the Flint People's village, whether they want to or not. A young man, barely older than you, is taken too — bound with rawhide and led away. He will be a slave. Not the slavery of chains and plantations that will exist on this continent in a thousand years, but slavery all the same — forced labor, no standing, no clan, no voice. Every tribe here practices it. No one questions it. It is as ordinary as the river.\n\nThe fishing weirs are destroyed. All that work, all those fish, gone. The dispute is not settled. It will never be settled. It will flare up again in a year, or five, or ten."
     effects:
       - stat: morale
@@ -265,6 +460,12 @@ nodes:
     next: raid_grief
 
   - id: raid_grief
+    scene: village
+    characters:
+      - id: daughter
+        sprite: child
+        x: 250
+        y: 102
     text: "You knew one of the dead men. He was called Looks-Twice. He used to carve little animals from wood and give them to the children. He had a way of making the bark curl that looked like fur. His wife sits by his body until the burial. No one writes his name. No one carves a stone. His daughter, who is your age, does not play anymore. Not for a long time."
     effects:
       - stat: morale
@@ -274,18 +475,40 @@ nodes:
   # === SOCIAL DYNAMICS ===
 
   - id: husbands
+    scene: longhouse
+    characters:
+      - id: mother
+        sprite: mother
+        x: 200
+        y: 100
+      - id: broken_bow
+        sprite: warrior
+        x: 330
+        y: 95
     text: "That summer, your mother takes a third husband. His name is Broken-Bow. The first — your father — died of a gut wound from a hunting accident when you were three. The second drowned running rapids. Broken-Bow is missing two fingers from frostbite. He is alive, which is the main qualification."
     next: husbands_normal
 
   - id: husbands_normal
+    scene: longhouse
     text: "No one thinks this is unusual. Men die. They die hunting, they die fighting, they die from infections and falls and fevers. A woman who wants her children to eat needs a man who can hunt, and she may need several across a lifetime. Broken-Bow is not unkind. He is not kind either. He is a man who can bring back deer meat. That is the arrangement."
     next: casual_violence
 
   - id: casual_violence
+    scene: village
     text: "You are beginning to notice how disputes are settled here. There are no laws. There is no court, no judge, no jail. There is custom, and there is strength. When two men disagree over a hunting ground, the larger one usually wins. When a woman is struck by her husband, her brothers may intervene — or may not, depending on the husband's standing. Everything is negotiated through the threat of physical force, and everyone knows it."
     next: beating
 
   - id: beating
+    scene: village
+    characters:
+      - id: crow_dog
+        sprite: warrior
+        x: 200
+        y: 95
+      - id: boy
+        sprite: child
+        x: 300
+        y: 102
     text: "You watch a man called Crow-Dog beat a boy — not his son, just a boy who was in the wrong place — for spilling a basket of dried fish. He hits the boy four times with a stick, hard, across the back. The boy is eight. No one stops Crow-Dog. His uncle comes later and takes the boy away, but says nothing to Crow-Dog. Crow-Dog is a good hunter and related to the chief by marriage. That is how justice works here. It doesn't."
     effects:
       - stat: morale
@@ -293,14 +516,37 @@ nodes:
     next: the_chief
 
   - id: the_chief
+    scene: village
+    characters:
+      - id: heavy_hand
+        sprite: warrior
+        x: 250
+        y: 93
     text: "The village chief is a man called Heavy-Hand. He earned the name. He leads because he is large, because he is violent, and because his clan is the biggest in the village. He is not elected. He is not wise. He is simply the man that no one wants to cross."
     next: aunt_conflict
 
   - id: aunt_conflict
+    scene: village
+    characters:
+      - id: aunt
+        sprite: aunt
+        x: 180
+        y: 100
+      - id: heavy_hand
+        sprite: warrior
+        x: 350
+        y: 93
+        facing: left
     text: "Your aunt — your mother's sister — has a habit of speaking when she should not. She is sharp-tongued. She publicly mocks Heavy-Hand's decision to move the fishing camp, and she is right — the new location is worse. But being right is not what keeps you alive here. Being quiet is."
     next: aunt_death
 
   - id: aunt_death
+    scene: village
+    characters:
+      - id: heavy_hand
+        sprite: warrior
+        x: 300
+        y: 93
     text: "One morning you wake to screaming. Heavy-Hand has struck your aunt with a war club. Not in a fight. Not in a dispute. She said something that embarrassed him in front of warriors from another village. He hit her once, in the side of the head, and she fell. She does not get up. She will never get up."
     effects:
       - stat: morale
@@ -309,6 +555,16 @@ nodes:
     next: aunt_nothing
 
   - id: aunt_nothing
+    scene: longhouse
+    characters:
+      - id: mother
+        sprite: mother
+        x: 200
+        y: 100
+      - id: grandmother
+        sprite: grandmother
+        x: 330
+        y: 97
     text: "Nothing happens to Heavy-Hand. Your mother weeps. Your grandmother sits very still and says nothing. The men in your family look at the ground. Heavy-Hand is the chief. He has thirty warriors who are loyal to him. Your family has six adults. Everyone can count. There is no police to call. There is no court to appeal to. There is no written law that says you cannot kill a woman for embarrassing you. There is nothing."
     effects:
       - stat: morale
@@ -318,6 +574,7 @@ nodes:
     next: aunt_aftermath
 
   - id: aunt_aftermath
+    scene: village
     text: "Life continues. It has to. Your aunt is buried and within a week, people are talking about the harvest. Within a month, only your family still carries it. Within a year, a new family will be living in her space in the longhouse. This is not a world that pauses for injustice. There is no word for injustice here. There is only what happens, and what you can do about it, which is usually nothing."
     effects:
       - set_flag: knows_powerlessness
@@ -325,6 +582,7 @@ nodes:
 
   - id: night_sky
     mood: beauty
+    scene: night
     text: "That autumn, you walk out of the longhouse after everyone is asleep. You cannot stand the smoke and the breathing and the closeness. You sit on the cold ground and look up. There is no light pollution. There are no cities. There is nothing between you and the stars, and there are more of them than anyone in the future will ever see. The entire arm of the galaxy is a river of light across the sky. You do not know what it is. No one here does. You only know that it is vast and silent and that it does not care about Heavy-Hand or your aunt or the Flint People or anything. And somehow that is a comfort — that there is something too large to be ruined by the smallness of what happens on the ground."
     effects:
       - stat: morale
@@ -334,6 +592,12 @@ nodes:
   # === THE TOOTHACHE ===
 
   - id: toothache
+    scene: longhouse
+    characters:
+      - id: player
+        sprite: child
+        x: 250
+        y: 102
     text: "You are eleven. A dull ache starts in the back of your jaw, lower left side. It is easy to ignore at first. Within a week, it is not. The pain wakes you at night. Your cheek swells. You cannot chew on that side. No one can help you because there is nothing to help you with."
     effects:
       - stat: health
@@ -341,6 +605,20 @@ nodes:
     next: toothache_options
 
   - id: toothache_options
+    scene: longhouse
+    characters:
+      - id: medicine_man
+        sprite: elder
+        x: 180
+        y: 95
+      - id: mother
+        sprite: mother
+        x: 320
+        y: 100
+      - id: uncle
+        sprite: warrior
+        x: 400
+        y: 97
     text: "The medicine man offers to pull it with a bone tool. Your mother says to pack it with a poultice of willow bark. Your uncle says to just endure it — his whole bottom row is rotted and he is still alive."
     choices:
       - text: "Let the medicine man pull it"
@@ -351,6 +629,12 @@ nodes:
         next: tooth_endure
 
   - id: tooth_pull
+    scene: longhouse
+    characters:
+      - id: medicine_man
+        sprite: elder
+        x: 220
+        y: 95
     text: "He grips the tooth with a carved bone tool and twists. There is no anesthetic. No numbing. Just his hand in your mouth and pain so white and total that you leave your body for a moment. The tooth comes out in three pieces. Blood fills your mouth. The socket will hurt for weeks. But the deep ache — the one in the bone — stops. You are lucky. It did not abscess. An abscess here, without antibiotics, can kill you. It has killed people you know."
     effects:
       - stat: health
@@ -361,6 +645,12 @@ nodes:
     next: growing_up
 
   - id: tooth_willow
+    scene: longhouse
+    characters:
+      - id: mother
+        sprite: mother
+        x: 230
+        y: 100
     text: "The willow bark helps. It contains something that in five hundred years they will refine into aspirin. You chew it and the pain dulls to a manageable throb. But the tooth is still rotting. The infection sits there, walled off for now, waiting. It will come back. Probably in winter, when your body is weakest. When it does, there will be no choice but to pull it or let it kill you."
     effects:
       - stat: health
@@ -369,6 +659,12 @@ nodes:
     next: growing_up
 
   - id: tooth_endure
+    scene: longhouse
+    characters:
+      - id: player
+        sprite: child
+        x: 250
+        y: 102
     text: "You endure it. There is no other word for what you do. For three weeks, the pain is a living thing inside your face. You barely eat. You barely sleep. Then the body does what it sometimes does — walls off the infection, builds a pocket of bone around it. The acute pain fades to a dull ache that will be with you for years. Your uncle was right. You are still alive. This is the standard of medicine here: not dying."
     effects:
       - stat: health
@@ -381,6 +677,12 @@ nodes:
   # === GROWING UP ===
 
   - id: growing_up
+    scene: village
+    characters:
+      - id: player
+        sprite: child
+        x: 250
+        y: 100
     text: "You are twelve. You have lived longer than many. You have watched friends die from things that should not kill anyone. You have gone hungry, been raided, pulled a tooth without medicine, and survived a world that makes no special effort to keep you alive. You are starting to look at the adults differently now. Not as protectors, but as people who are doing exactly what you are doing — guessing, hoping, enduring."
     effects:
       - stat: morale
@@ -389,5 +691,6 @@ nodes:
     next: ch1_ending
 
   - id: ch1_ending
+    scene: night
     text: "Adolescence is coming. With it will come new dangers — the rite of passage that scars and sometimes kills, the first hunt where failure means hunger, the raids where you are no longer a child hiding in the longhouse but a body expected to fight. You have survived childhood. The hard part is just beginning."
     next_event: chapter2

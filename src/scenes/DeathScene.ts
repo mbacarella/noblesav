@@ -22,6 +22,11 @@ const DEATHS = [
 ];
 
 export class DeathScene extends Phaser.Scene {
+  private skipped = false;
+  private allElements: Phaser.GameObjects.Text[] = [];
+  private fadeTweens: Phaser.Tweens.Tween[] = [];
+  private delayedCall?: Phaser.Time.TimerEvent;
+
   constructor() {
     super({ key: 'DeathScene' });
   }
@@ -29,6 +34,7 @@ export class DeathScene extends Phaser.Scene {
   create(): void {
     const width = this.cameras.main.width;
     const height = this.cameras.main.height;
+    this.skipped = false;
 
     this.cameras.main.setBackgroundColor('#000000');
 
@@ -49,34 +55,37 @@ export class DeathScene extends Phaser.Scene {
       align: 'center',
     }).setOrigin(0.5).setAlpha(0);
 
-    // Fade in slowly
-    this.tweens.add({
-      targets: text,
-      alpha: 1,
-      duration: 3000,
-    });
-
     const prompt = this.add.text(width / 2, height - 60, 'Press any key to try again', {
       fontFamily: 'monospace',
       fontSize: '12px',
       color: '#444444',
     }).setOrigin(0.5).setAlpha(0);
 
-    this.tweens.add({
-      targets: prompt,
-      alpha: 1,
-      duration: 1000,
-      delay: 4000,
-    });
+    this.allElements = [text, prompt];
 
-    // After delay, allow restart
-    this.time.delayedCall(4000, () => {
-      this.input.keyboard!.on('keydown', () => {
+    this.fadeTweens = [
+      this.tweens.add({ targets: text, alpha: 1, duration: 3000 }),
+      this.tweens.add({ targets: prompt, alpha: 1, duration: 1000, delay: 4000 }),
+    ];
+
+    const skipOrProceed = () => {
+      if (!this.skipped) {
+        this.skipped = true;
+        for (const tween of this.fadeTweens) tween.complete();
+        if (this.delayedCall) this.delayedCall.destroy();
+        for (const el of this.allElements) el.setAlpha(1);
+      } else {
+        this.input.keyboard!.removeAllListeners();
+        this.input.removeAllListeners();
         this.scene.start('TitleScene');
-      });
-      this.input.on('pointerdown', () => {
-        this.scene.start('TitleScene');
-      });
+      }
+    };
+
+    this.input.keyboard!.on('keydown', skipOrProceed);
+    this.input.on('pointerdown', skipOrProceed);
+
+    this.delayedCall = this.time.delayedCall(4000, () => {
+      this.skipped = true;
     });
   }
 }

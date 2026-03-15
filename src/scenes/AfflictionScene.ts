@@ -109,6 +109,11 @@ function rollAffliction(): Affliction {
 }
 
 export class AfflictionScene extends Phaser.Scene {
+  private skipped = false;
+  private allElements: Phaser.GameObjects.Text[] = [];
+  private fadeTweens: Phaser.Tweens.Tween[] = [];
+  private delayedCall?: Phaser.Time.TimerEvent;
+
   constructor() {
     super({ key: 'AfflictionScene' });
   }
@@ -116,6 +121,7 @@ export class AfflictionScene extends Phaser.Scene {
   create(): void {
     const width = this.cameras.main.width;
     const height = this.cameras.main.height;
+    this.skipped = false;
 
     this.cameras.main.setBackgroundColor('#000000');
 
@@ -156,34 +162,54 @@ export class AfflictionScene extends Phaser.Scene {
       align: 'center',
     }).setOrigin(0.5).setAlpha(0);
 
-    // Fade in sequence — survival first, then the bad news
-    this.tweens.add({ targets: survivedText, alpha: 1, duration: 1500 });
-    this.tweens.add({ targets: nameText, alpha: 1, duration: 1500, delay: 1500 });
-    this.tweens.add({ targets: descText, alpha: 1, duration: 2000, delay: 2000 });
-    this.tweens.add({ targets: modernText, alpha: 1, duration: 1500, delay: 3500 });
-
     const prompt = this.add.text(width / 2, height - 30, 'Press any key', {
       fontFamily: 'monospace',
       fontSize: '12px',
       color: '#444444',
     }).setOrigin(0.5).setAlpha(0);
 
-    this.tweens.add({ targets: prompt, alpha: 1, duration: 1000, delay: 5000 });
+    this.allElements = [survivedText, nameText, descText, modernText, prompt];
 
-    this.time.delayedCall(5000, () => {
-      const proceed = () => {
-        this.input.keyboard!.removeAllListeners();
-        this.input.removeAllListeners();
-        this.scene.start('DialogueScene', {
-          event: 'prologue',
-          affliction: {
-            effects: affliction.effects,
-            flags: affliction.flags,
-          },
-        });
-      };
-      this.input.keyboard!.on('keydown', proceed);
-      this.input.on('pointerdown', proceed);
+    // Fade in sequence
+    this.fadeTweens = [
+      this.tweens.add({ targets: survivedText, alpha: 1, duration: 1500 }),
+      this.tweens.add({ targets: nameText, alpha: 1, duration: 1500, delay: 1500 }),
+      this.tweens.add({ targets: descText, alpha: 1, duration: 2000, delay: 2000 }),
+      this.tweens.add({ targets: modernText, alpha: 1, duration: 1500, delay: 3500 }),
+      this.tweens.add({ targets: prompt, alpha: 1, duration: 1000, delay: 5000 }),
+    ];
+
+    const proceed = () => {
+      this.input.keyboard!.removeAllListeners();
+      this.input.removeAllListeners();
+      this.scene.start('DialogueScene', {
+        event: 'prologue',
+        affliction: {
+          effects: affliction.effects,
+          flags: affliction.flags,
+        },
+      });
+    };
+
+    const skipOrProceed = () => {
+      if (!this.skipped) {
+        // First press: skip animations, reveal everything
+        this.skipped = true;
+        for (const tween of this.fadeTweens) tween.complete();
+        if (this.delayedCall) this.delayedCall.destroy();
+        for (const el of this.allElements) el.setAlpha(1);
+      } else {
+        // Second press: proceed
+        proceed();
+      }
+    };
+
+    this.input.keyboard!.on('keydown', skipOrProceed);
+    this.input.on('pointerdown', skipOrProceed);
+
+    // Also allow proceeding after the natural sequence completes
+    this.delayedCall = this.time.delayedCall(5000, () => {
+      this.skipped = true;
     });
   }
 }

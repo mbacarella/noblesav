@@ -7,6 +7,7 @@ import { WorldScene } from './scenes/WorldScene';
 import { DeathScene } from './scenes/DeathScene';
 import { ExileScene } from './scenes/ExileScene';
 import { AfflictionScene } from './scenes/AfflictionScene';
+import { StageScene } from './scenes/StageScene';
 
 const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
@@ -19,7 +20,7 @@ const config: Phaser.Types.Core.GameConfig = {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
   },
-  scene: [BootScene, TitleScene, DeathScene, ExileScene, AfflictionScene, DialogueScene, StatusScene, WorldScene],
+  scene: [BootScene, TitleScene, DeathScene, ExileScene, AfflictionScene, DialogueScene, StageScene, StatusScene, WorldScene],
 };
 
 new Phaser.Game(config);
