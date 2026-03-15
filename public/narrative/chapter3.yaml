@@ -4,6 +4,16 @@ nodes:
   # === THE BIRTH ===
 
   - id: ch3_open
+    scene: village
+    characters:
+      - id: player
+        sprite: player
+        x: 200
+        y: 98
+      - id: broken-bow
+        sprite: warrior
+        x: 280
+        y: 98
     text: "You are nineteen. Walks-in-Shade has been in labor since before dawn. It is now past midday. The older women are with her in the longhouse. You are outside, because that is where men go during birth. You can hear her. Everyone can hear her."
     effects:
       - stat: morale
@@ -11,10 +21,30 @@ nodes:
     next: birth_waiting
 
   - id: birth_waiting
+    scene: village
+    characters:
+      - id: player
+        sprite: player
+        x: 220
+        y: 100
+      - id: broken-bow
+        sprite: warrior
+        x: 300
+        y: 100
     text: "You sit by the fire and try not to listen. Broken-Bow sits next to you and says nothing. He has been through this before — three times with your mother. One of those children died. He does not mention this. The silence between you is full of everything neither of you will say."
     next: birth_complications
 
   - id: birth_complications
+    scene: longhouse
+    characters:
+      - id: walks-in-shade
+        sprite: mother
+        x: 250
+        y: 100
+      - id: player
+        sprite: player
+        x: 350
+        y: 98
     text: "A woman comes out. Her hands are bloody. She says the baby is turned wrong — coming feet first. In five hundred years, a doctor will call this a breech presentation and perform a C-section in twenty minutes. Here, the women reach inside and try to turn the baby by hand. Walks-in-Shade screams in a way you did not know a human being could scream."
     effects:
       - stat: morale
@@ -28,6 +58,16 @@ nodes:
         next: birth_pray
 
   - id: birth_inside
+    scene: longhouse
+    characters:
+      - id: walks-in-shade
+        sprite: mother
+        x: 230
+        y: 102
+      - id: player
+        sprite: player
+        x: 310
+        y: 98
     text: "You push past the women. Walks-in-Shade is soaked in sweat, her face gray. She looks at you and there is nothing in her eyes but animal pain. You hold her hand. She crushes your fingers. One of the older women manages to turn the baby. The next push brings the head. The push after that brings your child into the world, slick and purple and silent."
     effects:
       - stat: standing
@@ -35,11 +75,23 @@ nodes:
     next: birth_moment
 
   - id: birth_outside
+    scene: village
+    characters:
+      - id: player
+        sprite: player
+        x: 250
+        y: 100
     text: "You stay. You sit in the dirt and listen to your wife suffer and you do nothing because there is nothing to do. This is not cowardice. This is the specific helplessness of a man in a world where the most dangerous thing a woman does is the thing that keeps the species alive. The screaming stops. A different sound replaces it."
     next: birth_moment
 
   - id: birth_pray
     mood: spirit
+    scene: night
+    characters:
+      - id: player
+        sprite: player
+        x: 270
+        y: 100
     text: "You speak to spirits you have never seen answer anything. You ask them to let her live. You ask them to let the child live. You promise things you cannot deliver. The spirits do not respond. They never respond. But the asking fills the time between her screams, and that is its only function."
     effects:
       - stat: morale
@@ -47,6 +99,20 @@ nodes:
     next: birth_moment
 
   - id: birth_moment
+    scene: longhouse
+    characters:
+      - id: walks-in-shade
+        sprite: mother
+        x: 220
+        y: 102
+      - id: player
+        sprite: player
+        x: 310
+        y: 97
+      - id: small-rain
+        sprite: child
+        x: 265
+        y: 103
     text: "The baby cries. It is the most important sound you have ever heard. A girl. She is impossibly small — a whole person no bigger than your forearm. Her fingers curl around your thumb and grip with a strength that makes no sense for something so tiny. Walks-in-Shade is alive. The baby is alive. For right now, in this moment, that is everything."
     effects:
       - stat: morale
@@ -59,6 +125,16 @@ nodes:
 
   - id: birth_beauty
     mood: beauty
+    scene: night
+    characters:
+      - id: walks-in-shade
+        sprite: mother
+        x: 230
+        y: 102
+      - id: player
+        sprite: player
+        x: 320
+        y: 100
     text: "That night, you lie next to Walks-in-Shade and the baby sleeps between you. She is so small that her whole body rises and falls with each breath. Outside, a summer rain starts — soft, steady, drumming on the bark roof. The longhouse smells of smoke and milk and wet earth. Walks-in-Shade's hand finds yours in the dark. Neither of you speaks. The rain says everything."
     effects:
       - stat: morale
@@ -68,6 +144,20 @@ nodes:
     next: first_months
 
   - id: first_months
+    scene: longhouse
+    characters:
+      - id: walks-in-shade
+        sprite: mother
+        x: 200
+        y: 100
+      - id: player
+        sprite: player
+        x: 320
+        y: 97
+      - id: small-rain
+        sprite: child
+        x: 240
+        y: 103
     text: "You name her Small-Rain, for the night she was born. The first months are exhausting. She cries constantly. Walks-in-Shade nurses her until her body is hollowed out. You hunt more — a new mouth means more meat, even though the mouth is tiny. You are twenty years old and you feel forty. Your back aches from carrying game. Your hands are cracked and scarred."
     effects:
       - stat: hunger
@@ -79,6 +169,20 @@ nodes:
   # === THE SICKNESS ===
 
   - id: child_sick
+    scene: longhouse
+    characters:
+      - id: small-rain
+        sprite: child
+        x: 250
+        y: 103
+      - id: player
+        sprite: player
+        x: 330
+        y: 97
+      - id: walks-in-shade
+        sprite: mother
+        x: 180
+        y: 100
     text: "Winter. Small-Rain is eight months old. She develops a cough that rattles in her chest like stones in a gourd. Then a fever. Then she stops nursing. You have seen this before. You have watched other parents' children go through this. Some of them lived. Some of them did not. Now it is yours."
     effects:
       - stat: morale
@@ -93,6 +197,20 @@ nodes:
 
   - id: child_shaman
     mood: spirit
+    scene: longhouse
+    characters:
+      - id: smoke-dreamer
+        sprite: elder
+        x: 200
+        y: 98
+      - id: small-rain
+        sprite: child
+        x: 290
+        y: 103
+      - id: player
+        sprite: player
+        x: 370
+        y: 97
     text: "The medicine man — Sees-the-Dark's apprentice now, a younger man called Smoke-Dreamer — examines her. He burns sage over her body and ties a small pouch of herbs around her neck. He chants for an hour. Then he makes small cuts on her chest to release the sickness. She screams so hard she cannot breathe. The cuts will scar. They will not help."
     effects:
       - stat: child_health
@@ -102,6 +220,20 @@ nodes:
     next: child_waiting
 
   - id: child_homecare
+    scene: longhouse
+    characters:
+      - id: player
+        sprite: player
+        x: 230
+        y: 97
+      - id: walks-in-shade
+        sprite: mother
+        x: 320
+        y: 100
+      - id: small-rain
+        sprite: child
+        x: 270
+        y: 103
     text: "You and Walks-in-Shade take turns through the night. You drip water into her mouth. You keep her warm. You do everything you can, which is almost nothing. The fever burns and burns. Her little body shakes. You hold her against your chest and will your heat into her and know that willing is not medicine."
     effects:
       - stat: child_health
@@ -109,6 +241,20 @@ nodes:
     next: child_waiting
 
   - id: child_bear_clan
+    scene: longhouse
+    characters:
+      - id: bear-clan-woman
+        sprite: grandmother
+        x: 180
+        y: 99
+      - id: small-rain
+        sprite: child
+        x: 270
+        y: 103
+      - id: player
+        sprite: player
+        x: 360
+        y: 97
     text: "The Bear Clan woman — the one who nursed you, if you were motherless, or who your mother knows — comes and looks at Small-Rain. She is old now, and she has seen a hundred sick children. She says, quietly, 'Keep her warm. Give her water. Do not let the medicine man cut her.' She has seen what the cutting does. She cannot say this loudly, because the medicine man has standing. But she says it to you."
     effects:
       - stat: child_health
@@ -118,6 +264,16 @@ nodes:
     next: child_waiting
 
   - id: child_waiting
+    scene: longhouse
+    characters:
+      - id: player
+        sprite: player
+        x: 250
+        y: 97
+      - id: small-rain
+        sprite: child
+        x: 290
+        y: 103
     text: "Three days. The longest three days of your life. You do not sleep. You do not eat. You hold her and listen to her breathing and count the breaths because you are afraid that if you stop counting, the breathing will stop too."
     roll:
       stat: child_health
@@ -126,6 +282,20 @@ nodes:
       failure: child_gone
 
   - id: child_lives
+    scene: longhouse
+    characters:
+      - id: player
+        sprite: player
+        x: 220
+        y: 97
+      - id: walks-in-shade
+        sprite: mother
+        x: 310
+        y: 100
+      - id: small-rain
+        sprite: child
+        x: 265
+        y: 103
     text: "On the fourth morning, the fever breaks. She opens her eyes and looks at you and makes a sound — not a cry, something softer. You weep. You weep in a way you have not since you were a child yourself, great heaving sobs that shake your whole body. Walks-in-Shade holds both of you. Small-Rain will live. This time."
     effects:
       - stat: morale
@@ -135,6 +305,16 @@ nodes:
     next: second_child
 
   - id: child_gone
+    scene: longhouse
+    characters:
+      - id: player
+        sprite: player
+        x: 230
+        y: 97
+      - id: walks-in-shade
+        sprite: mother
+        x: 320
+        y: 100
     text: "She stops breathing before dawn. There is no moment — no last word, no final look. She is breathing and then she is not. She is eight months old. In the modern world, a course of antibiotics would have cost less than a meal. You hold her for a long time after. Walks-in-Shade does not make a sound. The silence is worse than screaming."
     effects:
       - stat: morale
@@ -145,6 +325,16 @@ nodes:
     next: child_grief
 
   - id: child_grief
+    scene: river
+    characters:
+      - id: player
+        sprite: player
+        x: 250
+        y: 98
+      - id: walks-in-shade
+        sprite: mother
+        x: 340
+        y: 100
     text: "You bury her in the ground near the river. There is no coffin, no headstone, no written record that she existed. Small-Rain. Born in summer, died in winter. Eight months of life. You carry her name in your mouth because there is nowhere else to put it."
     effects:
       - stat: morale
@@ -153,6 +343,12 @@ nodes:
 
   - id: grief_beauty
     mood: beauty
+    scene: river
+    characters:
+      - id: player
+        sprite: player
+        x: 270
+        y: 98
     text: "A week after the burial, you go back to the place by the river. It has snowed. The world is white and absolutely still. A cardinal sits on a branch above where she is buried — so red against the snow it looks like a wound in the air. It does not move when you approach. It sits there, watching you with its small black eye, and you stand there, and the river goes by, and the snow falls, and the world is so quiet you can hear your own heartbeat. It is not a sign. There are no signs. But it is beautiful, and you are alive to see it, and that is something."
     effects:
       - stat: morale
@@ -162,6 +358,20 @@ nodes:
   # === SECOND CHILD / MORE CHILDREN ===
 
   - id: second_child
+    scene: longhouse
+    characters:
+      - id: walks-in-shade
+        sprite: mother
+        x: 210
+        y: 100
+      - id: player
+        sprite: player
+        x: 310
+        y: 97
+      - id: stands-early
+        sprite: child
+        x: 255
+        y: 103
     text: "Walks-in-Shade becomes pregnant again within the year. This is not a choice — it is biology and necessity. Children die. You have more children. This is the math of survival. The second birth is easier. A boy. You name him Stands-Early because he came at first light. He is healthy. For now."
     effects:
       - stat: children
@@ -172,6 +382,7 @@ nodes:
   # === THE FAMINE ===
 
   - id: famine_year
+    scene: field
     text: "You are twenty-three. The summer is dry. The corn withers in the fields. The beans produce half their usual yield. The squash vines brown and curl. The deer move to distant water sources. The fish in the river thin out. By autumn, everyone knows what is coming. There is not enough food to last the winter."
     effects:
       - stat: hunger
@@ -179,6 +390,20 @@ nodes:
     next: famine_reality
 
   - id: famine_reality
+    scene: longhouse
+    characters:
+      - id: player
+        sprite: player
+        x: 200
+        y: 97
+      - id: walks-in-shade
+        sprite: mother
+        x: 300
+        y: 100
+      - id: stands-early
+        sprite: child
+        x: 350
+        y: 103
     text: "Rationing begins immediately. Two meals become one. One becomes half. The children cry from hunger and the sound is constant, a thin wailing that fills the longhouse from dawn to dark. You chew bark to fill your stomach. It does not work. Your body starts consuming itself — first the fat, then the muscle. Your ribs emerge like the ribs of the lodge."
     effects:
       - stat: hunger
@@ -188,6 +413,17 @@ nodes:
     next: famine_choices
 
   - id: famine_choices
+    scene: village
+    characters:
+      - id: heavy-hand
+        sprite: warrior
+        x: 200
+        y: 95
+        facing: right
+      - id: player
+        sprite: player
+        x: 320
+        y: 98
     text: "Heavy-Hand calls a council. There is not enough food for the whole village. Everyone knows this. The question is what to do about it."
     choices:
       - text: "Suggest a long-range hunting party"
@@ -198,6 +434,20 @@ nodes:
         next: famine_silent
 
   - id: famine_hunt
+    scene: forest
+    characters:
+      - id: player
+        sprite: player
+        x: 200
+        y: 97
+      - id: hunter1
+        sprite: warrior
+        x: 290
+        y: 99
+      - id: hunter2
+        sprite: warrior
+        x: 370
+        y: 96
     text: "You volunteer to lead a hunting party into the deep forest, three days north where the game may still be thick. It is a gamble — you may find nothing, and the calories spent walking will leave you weaker. Six men go. You walk for three days on empty stomachs, lightheaded and stumbling."
     effects:
       - stat: health
@@ -211,6 +461,16 @@ nodes:
       failure: famine_hunt_fail
 
   - id: famine_hunt_success
+    scene: village
+    characters:
+      - id: player
+        sprite: player
+        x: 220
+        y: 97
+      - id: stands-early
+        sprite: child
+        x: 320
+        y: 103
     text: "On the fourth day, you find a herd of elk in a valley sheltered from the drought. You kill two. The meat will feed the village for a week — not enough, but enough to survive until the next hunt. You carry the meat back on your shoulders, walking through snow, and when you come into the village the children run to you and the look on their faces is worth every step."
     effects:
       - stat: hunger
@@ -222,6 +482,16 @@ nodes:
     next: famine_aftermath
 
   - id: famine_hunt_fail
+    scene: village
+    characters:
+      - id: player
+        sprite: player
+        x: 250
+        y: 97
+      - id: crow-foot
+        sprite: warrior
+        x: 350
+        y: 103
     text: "You find nothing. Four days of walking on an empty stomach, and the forest is as barren as the land around the village. One man — a young hunter called Crow-Foot — collapses on the walk back and has to be carried. You return with nothing. The village looks at you the way the village always looks at men who come back empty-handed. It is not anger. It is the absence of hope."
     effects:
       - stat: hunger
@@ -233,6 +503,20 @@ nodes:
     next: famine_aftermath
 
   - id: famine_raid
+    scene: forest
+    characters:
+      - id: heavy-hand
+        sprite: warrior
+        x: 180
+        y: 95
+      - id: player
+        sprite: player
+        x: 280
+        y: 97
+      - id: raider
+        sprite: warrior
+        x: 370
+        y: 99
     text: "Heavy-Hand likes this idea. He always likes the idea of raiding. Twelve men move south to the Flint People's winter stores. You find them — buried caches of dried corn and smoked fish. You take everything. The Flint People will starve this winter instead of you. You are not doing something brave. You are doing something necessary. These are not the same thing."
     effects:
       - stat: hunger
@@ -245,6 +529,16 @@ nodes:
     next: famine_aftermath
 
   - id: famine_silent
+    scene: longhouse
+    characters:
+      - id: player
+        sprite: player
+        x: 220
+        y: 97
+      - id: grandmother
+        sprite: grandmother
+        x: 330
+        y: 100
     text: "You say nothing. Heavy-Hand decides to send hunting parties and reduce rations further. The elderly begin refusing food again, as they did when you were a child. Your grandmother — if she is still alive — is among them. The cycle repeats, and you are old enough now to see it for what it is: the old dying so the young can live, over and over, forever."
     effects:
       - stat: hunger
@@ -254,6 +548,7 @@ nodes:
     next: famine_aftermath
 
   - id: famine_aftermath
+    scene: village
     text: "The village survives the winter. Barely. Seven people die — four elderly, two children, one man who went hunting alone and never came back. Spring comes and the survivors plant again and the cycle continues. There will be another famine. There is always another famine. The only question is when."
     effects:
       - stat: morale
@@ -263,6 +558,16 @@ nodes:
   # === WALKS-IN-SHADE'S INJURY ===
 
   - id: spouse_injury
+    scene: longhouse
+    characters:
+      - id: walks-in-shade
+        sprite: mother
+        x: 230
+        y: 100
+      - id: player
+        sprite: player
+        x: 340
+        y: 97
     text: "Summer. Walks-in-Shade is grinding corn when the stone mortar cracks and a shard drives into her hand, deep between the bones. Blood everywhere. You pull the shard out. The wound is deep but clean. In the modern world: stitches, a tetanus shot, antibiotics. Ten minutes in an urgent care clinic."
     effects:
       - stat: morale
@@ -270,6 +575,20 @@ nodes:
     next: spouse_treatment
 
   - id: spouse_treatment
+    scene: longhouse
+    characters:
+      - id: smoke-dreamer
+        sprite: elder
+        x: 180
+        y: 98
+      - id: walks-in-shade
+        sprite: mother
+        x: 280
+        y: 100
+      - id: player
+        sprite: player
+        x: 370
+        y: 97
     text: "Here: the medicine man packs the wound with a paste of chewed roots and animal fat. He wraps it in hide. Within three days, the hand is swollen to twice its size. Red lines run up her arm. The medicine man's paste has sealed the infection inside."
     effects:
       - stat: morale
@@ -283,6 +602,16 @@ nodes:
         next: spouse_bear
 
   - id: spouse_wash
+    scene: river
+    characters:
+      - id: player
+        sprite: player
+        x: 220
+        y: 97
+      - id: walks-in-shade
+        sprite: mother
+        x: 320
+        y: 100
     text: "You peel off the paste. The smell is terrible. You wash the wound in the river — which is not clean, but it is cleaner than the rotting poultice. You keep it open to the air. Walks-in-Shade is in agony. The medicine man is furious — you have insulted his skill. But over the next week, the swelling goes down. The red lines fade. She will live, but the hand never works properly again. Two fingers stay curled and stiff."
     effects:
       - stat: standing
@@ -293,6 +622,20 @@ nodes:
     next: spouse_aftermath
 
   - id: spouse_trust
+    scene: longhouse
+    characters:
+      - id: smoke-dreamer
+        sprite: elder
+        x: 180
+        y: 98
+      - id: walks-in-shade
+        sprite: mother
+        x: 280
+        y: 100
+      - id: player
+        sprite: player
+        x: 370
+        y: 97
     text: "You trust the medicine man because there is no one else to trust. He applies more paste. He chants. The swelling gets worse. On the fifth day, Walks-in-Shade cannot move her fingers. On the seventh, the hand turns dark. The medicine man says the spirits are angry. You know — you have always known, in the part of your mind that you are not allowed to use — that the spirits have nothing to do with it."
     effects:
       - stat: morale
@@ -300,6 +643,16 @@ nodes:
     next: spouse_trust_outcome
 
   - id: spouse_trust_outcome
+    scene: longhouse
+    characters:
+      - id: walks-in-shade
+        sprite: mother
+        x: 250
+        y: 100
+      - id: player
+        sprite: player
+        x: 350
+        y: 97
     text: "The infection walls itself off, eventually. The body does what the medicine man cannot. But her hand is ruined — three fingers dead and blackened, curled into a permanent fist. She will grind corn with one hand for the rest of her life. She does not blame you. She does not blame the medicine man. There is no one to blame. There is only what happened."
     effects:
       - stat: morale
@@ -308,6 +661,20 @@ nodes:
     next: spouse_aftermath
 
   - id: spouse_bear
+    scene: longhouse
+    characters:
+      - id: bear-clan-woman
+        sprite: grandmother
+        x: 180
+        y: 99
+      - id: walks-in-shade
+        sprite: mother
+        x: 280
+        y: 100
+      - id: player
+        sprite: player
+        x: 370
+        y: 97
     text: "The Bear Clan woman comes again. She is very old now. She peels off the poultice, makes a face at the smell, and washes the wound with water she has boiled and cooled. She packs it with clean moss, changed twice a day. She does not call the spirits. She does not chant. She just cleans the wound and keeps it clean. It is the closest thing to medicine that exists here."
     effects:
       - stat: morale
@@ -316,6 +683,16 @@ nodes:
     next: spouse_bear_outcome
 
   - id: spouse_bear_outcome
+    scene: longhouse
+    characters:
+      - id: walks-in-shade
+        sprite: mother
+        x: 250
+        y: 100
+      - id: player
+        sprite: player
+        x: 350
+        y: 97
     text: "The hand heals. Not perfectly — one finger stays stiff and the grip is weak — but it heals. The Bear Clan woman says nothing about the medicine man. She does not need to. You are beginning to understand something dangerous: that the people your village trusts to heal are often the ones doing the most harm. You cannot say this out loud. Not ever."
     effects:
       - stat: morale
@@ -324,16 +701,55 @@ nodes:
     next: spouse_aftermath
 
   - id: spouse_aftermath
+    scene: longhouse
+    characters:
+      - id: walks-in-shade
+        sprite: mother
+        x: 230
+        y: 100
+      - id: player
+        sprite: player
+        x: 350
+        y: 97
     text: "Walks-in-Shade adapts. She always adapts. She shifts the corn work to her good hand. She ties the baby carrier differently. She does not complain, not because she is stoic but because complaining requires energy she does not have. You watch her work with her damaged hand and feel something that is not quite love — it is older than love, deeper, the recognition that this person is carrying the same weight you are, in the same darkness, and neither of you asked for it."
     next: conflict_escalation
 
   # === THE CONFLICT ESCALATES ===
 
   - id: conflict_escalation
+    scene: village
+    characters:
+      - id: heavy-hand
+        sprite: warrior
+        x: 180
+        y: 95
+      - id: delegate1
+        sprite: warrior
+        x: 300
+        y: 98
+      - id: delegate2
+        sprite: warrior
+        x: 370
+        y: 100
+      - id: player
+        sprite: player
+        x: 240
+        y: 99
     text: "You are twenty-five. The Flint People have not forgotten. They have not forgotten the raids, the stolen food, the destroyed fishing camps. A delegation arrives at your village — three men, unarmed, their faces painted for mourning. They want to talk. Heavy-Hand does not want to talk. Heavy-Hand has never wanted to talk."
     next: conflict_decision
 
   - id: conflict_decision
+    scene: village
+    characters:
+      - id: heavy-hand
+        sprite: warrior
+        x: 190
+        y: 95
+        facing: right
+      - id: player
+        sprite: player
+        x: 310
+        y: 98
     text: "The delegation says their people are starving too. They propose sharing the river — dividing the fishing rights, alternating seasons. It is reasonable. It is the kind of arrangement that could end thirty years of bloodshed. Heavy-Hand says no. He says the river is theirs. The delegation leaves. You watch them go."
     choices:
       - text: "Speak to Heavy-Hand privately"
@@ -344,6 +760,17 @@ nodes:
         next: conflict_plot
 
   - id: conflict_speak
+    scene: longhouse
+    characters:
+      - id: heavy-hand
+        sprite: warrior
+        x: 200
+        y: 95
+        facing: right
+      - id: player
+        sprite: player
+        x: 330
+        y: 98
     text: "You go to him that evening. You choose your words carefully. You say the Flint People's offer was fair. You say the fighting has cost both sides too much. Heavy-Hand listens. Then he says, 'Your aunt talked too much, too.' He does not need to say more. You leave."
     effects:
       - stat: morale
@@ -353,6 +780,12 @@ nodes:
     next: conflict_battle
 
   - id: conflict_silent
+    scene: village
+    characters:
+      - id: player
+        sprite: player
+        x: 270
+        y: 98
     text: "You say nothing. You have learned what speaking costs in this village. Your aunt learned it. The younger man who repeated your words during the shaman's move learned it. Silence is the price of survival under Heavy-Hand, and you pay it, and it costs you something you cannot name but can feel — a piece of yourself that goes quiet and does not come back."
     effects:
       - stat: morale
@@ -360,6 +793,24 @@ nodes:
     next: conflict_battle
 
   - id: conflict_plot
+    scene: forest
+    characters:
+      - id: player
+        sprite: player
+        x: 170
+        y: 97
+      - id: broken-bow
+        sprite: warrior
+        x: 260
+        y: 98
+      - id: stone-thrower
+        sprite: warrior
+        x: 340
+        y: 96
+      - id: walks-far
+        sprite: warrior
+        x: 400
+        y: 100
     text: "You speak to three men you trust. Broken-Bow. Stone-Thrower. A man called Walks-Far who lost his brother in the last raid. You say, carefully, that Heavy-Hand is leading the village into a war it cannot win. They agree. But none of you will move against him. His clan is too strong. His warriors are too loyal. You are four men with a complaint, and he is a chief with a war club. The math has not changed."
     effects:
       - stat: standing
@@ -368,10 +819,39 @@ nodes:
     next: conflict_battle
 
   - id: conflict_battle
+    scene: forest
+    characters:
+      - id: player
+        sprite: player
+        x: 180
+        y: 97
+      - id: broken-bow
+        sprite: warrior
+        x: 260
+        y: 95
+      - id: enemy1
+        sprite: warrior
+        x: 350
+        y: 98
+      - id: enemy2
+        sprite: warrior
+        x: 400
+        y: 93
     text: "The war comes in late summer. The Flint People attack in force — not a raiding party this time but a war party, forty warriors. Your village has twenty-five men of fighting age. The battle is at the tree line, near the cornfields. It lasts less than an hour."
     next: conflict_fighting
 
   - id: conflict_fighting
+    scene: forest
+    characters:
+      - id: player
+        sprite: player
+        x: 220
+        y: 97
+      - id: enemy
+        sprite: warrior
+        x: 340
+        y: 95
+        facing: left
     text: "You fight. There is no choice. A man you have never seen swings a club at your head and you duck and drive your spear into his side and feel it go in and feel him fall and you are already turning because another one is coming. It is nothing like the raid when you were fifteen. This is survival — pure, brainless, the body doing what the mind cannot."
     effects:
       - stat: health
@@ -379,6 +859,16 @@ nodes:
     next: conflict_loss
 
   - id: conflict_loss
+    scene: field
+    characters:
+      - id: player
+        sprite: player
+        x: 220
+        y: 97
+      - id: broken-bow
+        sprite: warrior
+        x: 320
+        y: 103
     text: "Your village loses. Not completely — the Flint People withdraw after taking the cornfield and the fishing weirs. But eight of your men are dead. Broken-Bow is among them. Your stepfather. The man with the missing fingers who taught you to hunt, who sat beside you when your first child was born. He took a spear through the throat. He was dead before he hit the ground."
     effects:
       - stat: morale
@@ -389,6 +879,16 @@ nodes:
     next: conflict_grief
 
   - id: conflict_grief
+    scene: field
+    characters:
+      - id: player
+        sprite: player
+        x: 250
+        y: 97
+      - id: broken-bow
+        sprite: warrior
+        x: 310
+        y: 105
     text: "You sit with his body. His eyes are open. His hand is still gripping the war club. You close his eyes because someone should and there is no one else. He was not your father. He never tried to be. He was a man who showed up and did his work and taught you what he knew and that was enough. It was more than enough."
     effects:
       - stat: morale
@@ -397,6 +897,7 @@ nodes:
 
   - id: conflict_beauty
     mood: beauty
+    scene: night
     text: "That evening, the women sing the death songs. You have heard them before, but never for someone you loved. The voices rise in the smoke from the funeral fire, weaving together in a harmony that has no written notation, no recording, no way to be preserved. It is the most beautiful music you have ever heard and it exists only in this moment, in this smoke, for these dead, and then it is gone."
     effects:
       - stat: morale
@@ -406,6 +907,12 @@ nodes:
   # === ALREADY OLD ===
 
   - id: old_already
+    scene: longhouse
+    characters:
+      - id: player
+        sprite: player
+        x: 270
+        y: 98
     text: "You are twenty-seven. Your hair is thinning. Your teeth hurt constantly — three are missing, two more are rotting. Your knees ache when it rains. An old shoulder injury from the raid at fifteen has never healed right; you cannot lift your arm above your head on the left side. You are not old. But you are not young. Here, there is no middle."
     effects:
       - stat: health
@@ -413,11 +920,27 @@ nodes:
     next: old_reflection
 
   - id: old_reflection
+    scene: river
+    characters:
+      - id: player
+        sprite: player
+        x: 250
+        y: 98
     text: "You watch the young men training with war clubs and remember when that was you. It was not long ago. Twelve years. That is all the distance between the boy who went on his first raid and the man whose body is already failing. You have lived harder in twenty-seven years than most people in the future will live in eighty."
     next: old_beauty
 
   - id: old_beauty
     mood: beauty
+    scene: field
+    characters:
+      - id: player
+        sprite: player
+        x: 230
+        y: 97
+      - id: stands-early
+        sprite: child
+        x: 310
+        y: 103
     text: "But there is an evening in late summer when Stands-Early — your son, five now, the age you were when this story began — brings you a handful of wild strawberries. They are tiny and warm from the sun and he is so proud of himself he is vibrating. You eat them and they are sweet and he watches your face to see if you like them and you tell him they are the best you have ever tasted. And they are. They are."
     effects:
       - stat: morale
@@ -425,6 +948,12 @@ nodes:
     next: ch3_ending
 
   - id: ch3_ending
+    scene: night
+    characters:
+      - id: player
+        sprite: player
+        x: 270
+        y: 98
     text: "You are thirty. The elder years are beginning — not a gradual transition but a line you cross one morning when you wake up and something in your back has shifted and will never shift back. You have survived longer than most. Your children are alive. Your wife is alive. You are alive. The next chapter is the last one. You can feel it in your bones. The bones know before the mind does."
     effects:
       - set_flag: chapter3_complete

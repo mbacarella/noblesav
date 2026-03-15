@@ -6,6 +6,16 @@ trigger:
 
 nodes:
   - id: onset
+    scene: longhouse
+    characters:
+      - id: sick-child
+        sprite: child
+        x: 300
+        y: 98
+      - id: player
+        sprite: player
+        x: 200
+        y: 100
     text: "Your youngest has been burning with fever for two days. She won't eat. She barely opens her eyes."
     effects:
       - stat: morale
@@ -19,6 +29,20 @@ nodes:
         next: prayer
 
   - id: shaman
+    scene: longhouse
+    characters:
+      - id: medicine-man
+        sprite: elder
+        x: 350
+        y: 97
+      - id: sick-child
+        sprite: child
+        x: 270
+        y: 98
+      - id: player
+        sprite: player
+        x: 180
+        y: 100
     text: "The medicine man examines her. He says a dark spirit has entered through her ear. He mixes ash with animal fat and packs it into her ear canal, then cuts small lines on her chest to 'release the spirit.' She screams. The wounds will become infected within days."
     effects:
       - stat: child_health
@@ -34,6 +58,16 @@ nodes:
 
   - id: prayer
     mood: spirit
+    scene: longhouse
+    characters:
+      - id: sick-child
+        sprite: child
+        x: 300
+        y: 98
+      - id: player
+        sprite: player
+        x: 200
+        y: 100
     text: "You spend the night by the fire, speaking to spirits you cannot see and who do not answer. Your daughter's breathing grows shallow. By morning, nothing has changed. The other women look at you with pity. Prayer is all anyone has, and it is not enough."
     effects:
       - stat: morale
@@ -47,6 +81,16 @@ nodes:
         next: home_care
 
   - id: home_care
+    scene: longhouse
+    characters:
+      - id: sick-child
+        sprite: child
+        x: 290
+        y: 97
+      - id: player
+        sprite: player
+        x: 200
+        y: 100
     text: "You hold her through the night, dripping water into her mouth from a soaked hide. By morning the fever hasn't broken. The other women say you should have gone to the medicine man. Your mother-in-law says the child is being punished for something you did."
     effects:
       - stat: child_health
@@ -60,6 +104,16 @@ nodes:
         next: home_care_resolve
 
   - id: home_care_late
+    scene: longhouse
+    characters:
+      - id: sick-child
+        sprite: child
+        x: 290
+        y: 97
+      - id: player
+        sprite: player
+        x: 200
+        y: 100
     text: "You bring her home from the medicine man. The cuts on her chest are already red and swollen. You wash them with water — it is all you have. You do not know about infection. No one here does."
     effects:
       - stat: child_health
@@ -67,6 +121,20 @@ nodes:
     next: home_care_resolve
 
   - id: shaman_outcome
+    scene: longhouse
+    characters:
+      - id: medicine-man
+        sprite: elder
+        x: 350
+        y: 97
+      - id: sick-child
+        sprite: child
+        x: 270
+        y: 98
+      - id: player
+        sprite: player
+        x: 180
+        y: 100
     text: "The medicine man performs a chant over her through the night. He burns sage and blows smoke over her body. The cuts on her chest weep. By the third day, the fever breaks — not because of the treatment, but despite it. She will live, but the scars on her chest will never heal properly."
     effects:
       - stat: child_health
@@ -77,6 +145,16 @@ nodes:
     end: true
 
   - id: home_care_resolve
+    scene: longhouse
+    characters:
+      - id: sick-child
+        sprite: child
+        x: 290
+        y: 97
+      - id: player
+        sprite: player
+        x: 200
+        y: 100
     text: "Three more days pass. You barely sleep. You drip water and broth into her mouth. You keep the fire burning. Everything depends on her body's ability to fight what is inside her — and you have no way to help it."
     roll:
       stat: child_health
@@ -85,6 +163,16 @@ nodes:
       failure: child_dies
 
   - id: child_survives
+    scene: longhouse
+    characters:
+      - id: sick-child
+        sprite: child
+        x: 290
+        y: 97
+      - id: player
+        sprite: player
+        x: 200
+        y: 100
     text: "On the fifth morning, she opens her eyes and asks for food. The relief is so sharp it feels like pain. She will recover slowly, but she will live. You have been lucky. You know it is only luck."
     effects:
       - stat: morale
@@ -94,6 +182,12 @@ nodes:
     end: true
 
   - id: child_dies
+    scene: longhouse
+    characters:
+      - id: player
+        sprite: player
+        x: 250
+        y: 100
     text: "She stops breathing just before dawn. You have no way to write her name. There will be no stone with a date. In three generations, no one in the tribe will remember she existed. You wrap her in hide and carry her to the burial ground. She is the third child you've lost."
     effects:
       - stat: morale
