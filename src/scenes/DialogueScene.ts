@@ -624,22 +624,7 @@ export class DialogueScene extends Phaser.Scene {
         }
       };
 
-      // In stage mode, paginate long text
-      if (this.stageMode) {
-        this.pages = this.paginateText(node.text);
-        if (this.pages.length > 1) {
-          this.currentPage = 0;
-          this.isPaginating = true;
-          this.paginationCallback = onTextComplete;
-          this.typewriteText(this.pages[0], () => {
-            this.continuePrompt.setVisible(true);
-          });
-        } else {
-          this.typewriteText(node.text, onTextComplete);
-        }
-      } else {
-        this.typewriteText(node.text, onTextComplete);
-      }
+      this.typewriteText(node.text, onTextComplete);
     };
 
     if (node.move && node.move.length > 0 && this.stageMode) {
@@ -865,14 +850,6 @@ export class DialogueScene extends Phaser.Scene {
         this.updateChoiceHighlight();
       } else if (key === Phaser.Input.Keyboard.KeyCodes.ENTER || key === Phaser.Input.Keyboard.KeyCodes.SPACE) {
         this.confirmChoice();
-      }
-      return;
-    }
-
-    // Pagination: advance to next page if paginating
-    if (this.isPaginating) {
-      if (key === Phaser.Input.Keyboard.KeyCodes.ENTER || key === Phaser.Input.Keyboard.KeyCodes.SPACE) {
-        this.advancePage();
       }
       return;
     }
