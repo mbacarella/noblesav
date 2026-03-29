@@ -1,6 +1,6 @@
 # Noble Savage
 
-A 2D RPG in the visual style of SNES-era Final Fantasy that functions as a choose-your-own-adventure with light survival mechanics. Subverts the "noble savage" myth by putting the player through the brutal realities of pre-contact North American indigenous life. Tone is sobering realism — no editorializing, just let the player live it.
+A 2D RPG in the visual style of SNES-era Final Fantasy that functions as a choose-your-own-adventure with light survival mechanics. Subverts the "noble savage" myth by putting the player through the brutal realities of pre-contact North American indigenous life.
 
 ## Play
 
