@@ -1,0 +1,384 @@
+/* === Loading === */
+#screen-loading {
+  background: #0a0a0a;
+}
+
+.loading-bar-container {
+  text-align: center;
+}
+
+.loading-text {
+  color: #666666;
+  font-size: 12px;
+  margin-bottom: 12px;
+}
+
+.loading-bar-bg {
+  width: 200px;
+  height: 6px;
+  background: #222222;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.loading-bar-fill {
+  width: 0%;
+  height: 100%;
+  background: #5a5a8a;
+  transition: width 0.2s;
+}
+
+/* === Title === */
+#screen-title {
+  background: #0a0a0a;
+  cursor: pointer;
+}
+
+.title-content {
+  text-align: center;
+}
+
+.title-heading {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 36px;
+  letter-spacing: 8px;
+  color: #c8b080;
+  margin-bottom: 16px;
+  font-weight: normal;
+}
+
+.title-subtitle {
+  font-size: 16px;
+  color: #666666;
+  margin-bottom: 48px;
+}
+
+.title-prompt {
+  font-size: 15px;
+  color: #555555;
+}
+
+@media (max-width: 480px) {
+  .title-heading {
+    font-size: 28px;
+    letter-spacing: 5px;
+  }
+}
+
+/* === Death === */
+#screen-death {
+  background: #0a0a0a;
+  cursor: pointer;
+}
+
+.death-content {
+  max-width: 540px;
+  width: calc(100% - 40px);
+  text-align: left;
+}
+
+.death-text {
+  color: #888888;
+  font-size: 17px;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  opacity: 0;
+  animation: fadeIn 3s ease-in forwards;
+}
+
+.death-prompt {
+  color: #444444;
+  font-size: 15px;
+  text-align: center;
+  margin-top: 40px;
+  opacity: 0;
+  animation: fadeIn 1s ease-in 4s forwards;
+}
+
+/* === Affliction === */
+#screen-affliction {
+  background: #0a0a0a;
+  cursor: pointer;
+}
+
+.affliction-content {
+  max-width: 540px;
+  width: calc(100% - 40px);
+  text-align: center;
+}
+
+.affliction-survived {
+  color: #888888;
+  font-size: 17px;
+  opacity: 0;
+  animation: fadeIn 2s ease-in forwards;
+}
+
+.affliction-name {
+  color: #c8b080;
+  font-size: 22px;
+  margin-top: 24px;
+  opacity: 0;
+  animation: fadeIn 1.5s ease-in 2s forwards;
+}
+
+.affliction-desc {
+  color: #aaaaaa;
+  font-size: 16px;
+  line-height: 1.6;
+  margin-top: 16px;
+  white-space: pre-wrap;
+  opacity: 0;
+  animation: fadeIn 1.5s ease-in 3.5s forwards;
+}
+
+.affliction-modern {
+  color: #666666;
+  font-size: 15px;
+  font-style: italic;
+  margin-top: 20px;
+  opacity: 0;
+  animation: fadeIn 1.5s ease-in 5s forwards;
+}
+
+.affliction-prompt {
+  color: #444444;
+  font-size: 15px;
+  margin-top: 40px;
+  opacity: 0;
+  animation: fadeIn 1s ease-in 6s forwards;
+}
+
+/* === Dialogue (main game) === */
+#screen-dialogue {
+  justify-content: flex-start;
+  align-items: stretch;
+  background: #0a0a0a;
+}
+
+/* Stage (procedural scene canvas) */
+.stage-container {
+  display: none;
+  flex-shrink: 0;
+
+  padding: 0 12px;
+}
+
+.stage-container.visible {
+  display: block;
+}
+
+.stage-container canvas {
+  width: 100%;
+  height: auto;
+  display: block;
+  image-rendering: pixelated;
+  border-radius: 6px 6px 0 0;
+  border: 2px solid #3a3a6a;
+  border-bottom: none;
+}
+
+/* dialogue screen overrides the centered default to top-aligned */
+
+.dialogue-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 10px 16px;
+  flex-shrink: 0;
+}
+
+.dialogue-title {
+  font-size: 12px;
+  letter-spacing: 3px;
+  color: #555555;
+}
+
+.dialogue-chapter {
+  font-size: 12px;
+  color: #555555;
+}
+
+.dialogue-box {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+
+  background: rgba(12, 12, 40, 0.92);
+  border: 2px solid #3a3a6a;
+  border-radius: 8px;
+  box-shadow:
+    inset 0 0 0 1px rgba(80, 80, 140, 0.3),
+    0 0 20px rgba(0, 0, 0, 0.6);
+  margin: 0 12px;
+  padding: 20px 24px;
+  overflow: hidden;
+  position: relative;
+  transition: border-color 1s, box-shadow 1s;
+}
+
+.dialogue-text {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  color: #e0dcc8;
+  font-size: 17px;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  padding-bottom: 8px;
+  transition: color 1s;
+}
+
+.dialogue-choices {
+  flex-shrink: 0;
+  display: none;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(80, 80, 140, 0.2);
+}
+
+.dialogue-choices.visible {
+  display: flex;
+}
+
+.choice-btn {
+  background: rgba(20, 20, 50, 0.8);
+  border: 1px solid #3a3a6a;
+  border-radius: 4px;
+  color: #c8b080;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 16px;
+  padding: 10px 14px;
+  text-align: left;
+  cursor: pointer;
+  min-height: 44px;
+  transition: background 0.15s, border-color 0.15s;
+  line-height: 1.4;
+}
+
+.choice-btn:hover, .choice-btn:focus {
+  background: rgba(40, 40, 80, 0.9);
+  border-color: #6a6aaa;
+  outline: none;
+}
+
+.choice-btn.selected {
+  background: rgba(60, 60, 100, 0.9);
+  border-color: #8a8acc;
+}
+
+.dialogue-continue {
+  display: none;
+  text-align: center;
+  color: #555555;
+  font-size: 18px;
+  padding-top: 10px;
+  animation: pulse 2s ease-in-out infinite;
+  cursor: pointer;
+}
+
+.dialogue-continue.visible {
+  display: block;
+}
+
+/* === Status HUD === */
+.status-hud {
+  display: flex;
+  justify-content: center;
+
+  gap: 16px;
+  padding: 10px 16px;
+  flex-shrink: 0;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: #777777;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.stat-bar-bg {
+  width: 40px;
+  height: 4px;
+  background: #333333;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.stat-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.5s ease, background-color 0.5s;
+}
+
+/* === Exile === */
+#screen-exile {
+  background: #0a0a0a;
+  cursor: pointer;
+}
+
+.exile-content {
+  max-width: 540px;
+  width: calc(100% - 40px);
+  text-align: left;
+}
+
+.exile-text {
+  color: #888888;
+  font-size: 17px;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  opacity: 0;
+  animation: fadeIn 3s ease-in forwards;
+}
+
+.exile-prompt {
+  color: #444444;
+  font-size: 15px;
+  text-align: center;
+  margin-top: 40px;
+  opacity: 0;
+  animation: fadeIn 1s ease-in 4s forwards;
+}
+
+/* === Responsive tweaks === */
+@media (max-width: 480px) {
+  .dialogue-box {
+    margin: 0 6px;
+    padding: 16px 16px;
+    border-radius: 6px;
+  }
+
+  .dialogue-text {
+    font-size: 16px;
+  }
+
+  .choice-btn {
+    font-size: 15px;
+    padding: 12px 14px;
+  }
+
+  .status-hud {
+    gap: 10px;
+    padding: 8px 10px;
+  }
+
+  .stat-bar-bg {
+    width: 32px;
+  }
+
+  .death-content,
+  .affliction-content,
+  .exile-content {
+    width: calc(100% - 28px);
+  }
+}

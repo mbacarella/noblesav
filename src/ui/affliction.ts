@@ -1,5 +1,6 @@
-import Phaser from 'phaser';
 import { SurvivalStats } from '../data/types';
+import { showScreen } from './screens';
+import { showDialogue } from './dialogue';
 
 interface Affliction {
   name: string;
@@ -96,120 +97,69 @@ const AFFLICTIONS: Affliction[] = [
   },
 ];
 
-// Weighted: "Nothing" is rare, most get something
 function rollAffliction(): Affliction {
   const roll = Math.random();
   if (roll < 0.15) {
-    // 15% chance of being born healthy
     return AFFLICTIONS[AFFLICTIONS.length - 1];
   }
-  // Pick from the rest
   const index = Math.floor(Math.random() * (AFFLICTIONS.length - 1));
   return AFFLICTIONS[index];
 }
 
-export class AfflictionScene extends Phaser.Scene {
-  private skipped = false;
-  private allElements: Phaser.GameObjects.Text[] = [];
-  private fadeTweens: Phaser.Tweens.Tween[] = [];
-  private delayedCall?: Phaser.Time.TimerEvent;
+export function showAffliction(): void {
+  showScreen('screen-affliction');
 
-  constructor() {
-    super({ key: 'AfflictionScene' });
+  const affliction = rollAffliction();
+
+  const survivedEl = document.getElementById('affliction-survived')!;
+  const nameEl = document.getElementById('affliction-name')!;
+  const descEl = document.getElementById('affliction-desc')!;
+  const modernEl = document.getElementById('affliction-modern')!;
+  const promptEl = document.getElementById('affliction-prompt')!;
+
+  nameEl.textContent = affliction.name.toUpperCase();
+  descEl.textContent = affliction.text;
+  modernEl.textContent = affliction.modern ? `In the modern world: ${affliction.modern}` : '';
+
+  // Reset animations
+  const els = [survivedEl, nameEl, descEl, modernEl, promptEl];
+  for (const el of els) {
+    el.style.animation = 'none';
+    el.style.opacity = '0';
+    void el.offsetHeight;
+    el.style.animation = '';
   }
 
-  create(): void {
-    const width = this.cameras.main.width;
-    const height = this.cameras.main.height;
-    this.skipped = false;
+  let skipped = false;
+  let readyTimeout: ReturnType<typeof setTimeout>;
 
-    this.cameras.main.setBackgroundColor('#000000');
-
-    const affliction = rollAffliction();
-
-    // Survival confirmation
-    const survivedText = this.add.text(width / 2, 30, 'You survived infancy.', {
-      fontFamily: 'monospace',
-      fontSize: '14px',
-      color: '#88aa88',
-    }).setOrigin(0.5).setAlpha(0);
-
-    // Affliction name
-    const nameText = this.add.text(width / 2, 55, affliction.name.toUpperCase(), {
-      fontFamily: 'monospace',
-      fontSize: '12px',
-      color: '#665544',
-    }).setOrigin(0.5).setAlpha(0);
-
-    // Description
-    const descText = this.add.text(width / 2, height / 2 - 10, affliction.text, {
-      fontFamily: 'monospace',
-      fontSize: '14px',
-      color: '#999988',
-      wordWrap: { width: width - 80 },
-      lineSpacing: 6,
-      align: 'center',
-    }).setOrigin(0.5).setAlpha(0);
-
-    // Modern treatment (the gut punch)
-    const modernLabel = affliction.modern ? `In the modern world: ${affliction.modern}` : '';
-    const modernText = this.add.text(width / 2, height - 80, modernLabel, {
-      fontFamily: 'monospace',
-      fontSize: '11px',
-      color: '#555555',
-      fontStyle: 'italic',
-      wordWrap: { width: width - 100 },
-      align: 'center',
-    }).setOrigin(0.5).setAlpha(0);
-
-    const prompt = this.add.text(width / 2, height - 30, 'Press any key', {
-      fontFamily: 'monospace',
-      fontSize: '12px',
-      color: '#444444',
-    }).setOrigin(0.5).setAlpha(0);
-
-    this.allElements = [survivedText, nameText, descText, modernText, prompt];
-
-    // Fade in sequence
-    this.fadeTweens = [
-      this.tweens.add({ targets: survivedText, alpha: 1, duration: 1500 }),
-      this.tweens.add({ targets: nameText, alpha: 1, duration: 1500, delay: 1500 }),
-      this.tweens.add({ targets: descText, alpha: 1, duration: 2000, delay: 2000 }),
-      this.tweens.add({ targets: modernText, alpha: 1, duration: 1500, delay: 3500 }),
-      this.tweens.add({ targets: prompt, alpha: 1, duration: 1000, delay: 5000 }),
-    ];
-
-    const proceed = () => {
-      this.input.keyboard!.removeAllListeners();
-      this.input.removeAllListeners();
-      this.scene.start('DialogueScene', {
-        event: 'prologue',
-        affliction: {
-          effects: affliction.effects,
-          flags: affliction.flags,
-        },
-      });
-    };
-
-    const skipOrProceed = () => {
-      if (!this.skipped) {
-        // First press: skip animations, reveal everything
-        this.skipped = true;
-        for (const tween of this.fadeTweens) tween.complete();
-        if (this.delayedCall) this.delayedCall.destroy();
-        for (const el of this.allElements) el.setAlpha(1);
-      } else {
-        // Second press: proceed
-        proceed();
+  const skipOrProceed = () => {
+    if (!skipped) {
+      skipped = true;
+      for (const el of els) {
+        el.style.animation = 'none';
+        el.style.opacity = '1';
       }
-    };
+      clearTimeout(readyTimeout);
+    } else {
+      cleanup();
+      showDialogue('prologue', {
+        effects: affliction.effects,
+        flags: affliction.flags,
+      });
+    }
+  };
 
-    this.input.keyboard!.on('keydown', skipOrProceed);
-    this.input.on('pointerdown', skipOrProceed);
+  readyTimeout = setTimeout(() => {
+    skipped = true;
+  }, 6000);
 
-    // Also allow proceeding after the natural sequence completes
-    this.delayedCall = this.time.delayedCall(5000, () => {
-      this.skipped = true;
-    });
+  document.addEventListener('keydown', skipOrProceed);
+  document.getElementById('screen-affliction')!.addEventListener('click', skipOrProceed);
+
+  function cleanup() {
+    document.removeEventListener('keydown', skipOrProceed);
+    document.getElementById('screen-affliction')!.removeEventListener('click', skipOrProceed);
+    clearTimeout(readyTimeout);
   }
 }

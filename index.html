@@ -2,15 +2,75 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <title>Noble Savage</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { background: #000; display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow: hidden; }
-    canvas { image-rendering: pixelated; }
-  </style>
+  <link rel="stylesheet" href="/src/styles/main.css" />
+  <link rel="stylesheet" href="/src/styles/screens.css" />
 </head>
 <body>
+  <div id="app">
+    <!-- Loading -->
+    <div id="screen-loading" class="screen active">
+      <div class="loading-bar-container">
+        <div class="loading-text">Loading...</div>
+        <div class="loading-bar-bg"><div class="loading-bar-fill" id="loading-bar"></div></div>
+      </div>
+    </div>
+
+    <!-- Title -->
+    <div id="screen-title" class="screen">
+      <div class="title-content">
+        <h1 class="title-heading">NOBLE SAVAGE</h1>
+        <p class="title-subtitle">Survival is not given</p>
+        <p class="title-prompt pulse">Press any key to begin</p>
+      </div>
+    </div>
+
+    <!-- Death (infant mortality) -->
+    <div id="screen-death" class="screen">
+      <div class="death-content">
+        <p class="death-text" id="death-text"></p>
+        <p class="death-prompt" id="death-prompt">Press any key to try again</p>
+      </div>
+    </div>
+
+    <!-- Affliction -->
+    <div id="screen-affliction" class="screen">
+      <div class="affliction-content">
+        <p class="affliction-survived" id="affliction-survived">You survived infancy.</p>
+        <p class="affliction-name" id="affliction-name"></p>
+        <p class="affliction-desc" id="affliction-desc"></p>
+        <p class="affliction-modern" id="affliction-modern"></p>
+        <p class="affliction-prompt" id="affliction-prompt">Press any key</p>
+      </div>
+    </div>
+
+    <!-- Dialogue (main game) -->
+    <div id="screen-dialogue" class="screen">
+      <div class="dialogue-header">
+        <span class="dialogue-title" id="dialogue-title">NOBLE SAVAGE</span>
+        <span class="dialogue-chapter" id="dialogue-chapter"></span>
+      </div>
+      <div class="stage-container" id="stage-container">
+        <canvas id="stage-canvas"></canvas>
+      </div>
+      <div class="dialogue-box" id="dialogue-box">
+        <div class="dialogue-text" id="dialogue-text"></div>
+        <div class="dialogue-choices" id="dialogue-choices"></div>
+        <div class="dialogue-continue" id="dialogue-continue">&#9660;</div>
+      </div>
+      <div class="status-hud" id="status-hud"></div>
+    </div>
+
+    <!-- Exile -->
+    <div id="screen-exile" class="screen">
+      <div class="exile-content">
+        <p class="exile-text" id="exile-text"></p>
+        <p class="exile-prompt" id="exile-prompt">Press any key to try again</p>
+      </div>
+    </div>
+  </div>
+
   <script type="module" src="/src/main.ts"></script>
 </body>
 </html>

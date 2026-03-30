@@ -4,32 +4,36 @@ A 2D RPG in the visual style of SNES-era Final Fantasy (FF6) that functions as a
 
 ## Tech Stack
 
-- **Runtime**: Browser (HTML5 Canvas via Phaser 3)
-- **Framework**: Phaser 3
+- **Runtime**: Browser (vanilla HTML/CSS/TypeScript — no framework)
 - **Language**: TypeScript
 - **Build**: Vite
-- **Narrative**: YAML files in `public/narrative/`, loaded at boot as text, parsed with js-yaml at runtime
+- **Styling**: Plain CSS, SNES FF6 aesthetic (dark panels, monospace, gold accents)
+- **Narrative**: YAML files in `public/narrative/`, loaded at boot via fetch, parsed with js-yaml
 - **Package manager**: npm
 
 ## Commands
 
-- `npm run dev` — start Vite dev server
-- `npm run build` — production build to `dist/`
+- `make dev` — start Vite dev server
+- `make build` — production build to `dist/`
+- `make publish` — build + deploy to GitHub Pages
 - `npx tsc --noEmit` — type check without emitting
 
 ## Project Structure
 
 ```
 src/
-  main.ts                  # Phaser game config, scene registration
-  scenes/
-    BootScene.ts           # Preloads YAML files, shows loading bar
-    TitleScene.ts          # Title screen, 50% infant mortality gate, mercy rule
-    DeathScene.ts          # Infant death screen (12 variants)
-    AfflictionScene.ts     # Non-fatal birth conditions (11 afflictions + healthy)
-    DialogueScene.ts       # Main narrative UI — typewriter text, choices, stat effects
-    StatusScene.ts         # HUD bar (HP, Food, Warmth, Will, Rank)
-    WorldScene.ts          # Placeholder for Phase 2 overworld
+  main.ts                  # App bootstrap: YAML loading, screen init, debug chapter param
+  ui/
+    screens.ts             # Screen manager (show/hide screens by ID)
+    title.ts               # Title screen, 50% infant mortality gate, mercy rule
+    death.ts               # Infant death screen (12 variants)
+    affliction.ts          # Non-fatal birth conditions (11 afflictions + healthy)
+    dialogue.ts            # Main game: typewriter text, choices, moods, stat effects
+    exile.ts               # Exile ending (standing reaches 0)
+    status.ts              # HUD bar (HP, Will, Status)
+  styles/
+    main.css               # Base styles, SNES aesthetic, responsive, mood effects
+    screens.css            # Per-screen styles
   systems/
     NarrativeEngine.ts     # YAML event loading, node traversal, rolls, random branching
     SurvivalSystem.ts      # Stat tracking (health, hunger, warmth, morale, standing, etc.)
@@ -43,6 +47,9 @@ public/
   narrative/
     prologue.yaml          # Birth through age 5, two branching infant paths
     chapter1.yaml          # Childhood ages 5-12
+    chapter2.yaml          # Adolescence ages 13-18
+    chapter3.yaml          # Adulthood ages 19-30
+    chapter4.yaml          # Elder years ages 30-40 + epilogue
     events/
       sickness.yaml        # Child fever event
 ```
@@ -56,45 +63,18 @@ YAML files define events with nodes. Key node fields:
 - `roll` — dice roll with `stat`, `dc`, `success`, `failure`
 - `random` — array of node IDs, engine picks one at random
 - `next` — auto-advance to another node (player presses continue)
-- `next_event` — chain to another YAML event (by cache key from BootScene)
+- `next_event` — chain to another YAML event (by cache key from main.ts)
 - `end` — marks end of event, shows return-to-title
 
 Choices can have `condition` with `has_flag`, `not_flag`, `min_stat`, `max_stat`.
 
 ## Game Flow
 
-Title → [50% death / 50% survive] → AfflictionScene → Prologue → Chapter 1 → ...
+Title → [50% death / 50% survive] → Affliction → Prologue → Chapter 1 → ... → Chapter 4/Epilogue
 
 Mercy rule: 2+ infant deaths within 60 seconds = auto-survive next attempt.
 
-## Implementation Phases
-
-### Phase 1: Skeleton ✅
-- Vite + Phaser 3 + TS project setup
-- Narrative engine with YAML loading, node traversal, conditions, rolls, random branching
-- Dialogue scene with FF-style text box, typewriter effect, keyboard/mouse choice selection
-- Survival stats HUD
-- Infant mortality gate + affliction system
-- Prologue (two branching paths) + Chapter 1 playable
-
-### Phase 2: World
-- Tile-based overworld (village, forest, river, plains)
-- NPC placement and interaction triggers
-- Seasonal visual changes
-- Basic sound/music
-
-### Phase 3: Content
-- Chapters 2-4 + epilogue YAML
-- Random event system (sickness, raids, weather)
-- Season/time progression
-- Branching consequences across chapters
-- Multiple endings
-
-### Phase 4: Polish
-- Real pixel art assets
-- Music and SFX
-- Save/load system
-- Playtesting and balance
+Debug: `?chapter=chapter2` URL param skips to any chapter with simulated state.
 
 ## Chapter Outline
 

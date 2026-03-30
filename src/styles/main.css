@@ -1,0 +1,150 @@
+/* === Reset & Base === */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  background: #0a0a0a;
+  color: #e0dcc8;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
+}
+
+#app {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+/* === Screens === */
+.screen {
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.screen.active {
+  visibility: visible;
+  pointer-events: auto;
+}
+
+/* === FF6-style panel === */
+.panel {
+  background: rgba(12, 12, 40, 0.92);
+  border: 2px solid #3a3a6a;
+  border-radius: 8px;
+  box-shadow:
+    inset 0 0 0 1px rgba(80, 80, 140, 0.3),
+    0 0 20px rgba(0, 0, 0, 0.6);
+  padding: 20px 24px;
+  max-width: 600px;
+  width: calc(100% - 32px);
+}
+
+/* === Typography === */
+.text-body {
+  color: #e0dcc8;
+  font-size: 14px;
+  line-spacing: 6px;
+  white-space: pre-wrap;
+}
+
+.text-gold {
+  color: #c8b080;
+}
+
+.text-muted {
+  color: #888888;
+}
+
+.text-dim {
+  color: #444444;
+}
+
+/* === Mood effects === */
+.mood-beauty .dialogue-box {
+  border-color: #2a5a3a;
+  box-shadow:
+    inset 0 0 0 1px rgba(60, 140, 80, 0.3),
+    0 0 30px rgba(40, 120, 60, 0.15);
+}
+
+.mood-beauty .dialogue-text {
+  background: linear-gradient(180deg, #a8c8a0, #70b870, #c8e0b0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.mood-spirit .dialogue-box {
+  border-color: #4a3a6a;
+  box-shadow:
+    inset 0 0 0 1px rgba(100, 70, 140, 0.3),
+    0 0 30px rgba(80, 50, 120, 0.15);
+}
+
+.mood-spirit .dialogue-text {
+  color: #b8a0d0;
+}
+
+/* === Pulsing animation === */
+.pulse {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+/* === Fade in === */
+.fade-in {
+  animation: fadeIn 2s ease-in forwards;
+  opacity: 0;
+}
+
+.fade-in-slow {
+  animation: fadeIn 3s ease-in forwards;
+  opacity: 0;
+}
+
+@keyframes fadeIn {
+  to { opacity: 1; }
+}
+
+/* === Responsive === */
+@media (max-width: 480px) {
+  html {
+    font-size: 15px;
+  }
+
+  .panel {
+    padding: 16px 18px;
+    border-radius: 6px;
+    width: calc(100% - 20px);
+  }
+
+  .text-body {
+    font-size: 13px;
+  }
+}
+
+@media (min-width: 768px) {
+  .text-body {
+    font-size: 15px;
+  }
+}
