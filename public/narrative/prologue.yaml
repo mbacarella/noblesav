@@ -261,7 +261,7 @@ nodes:
         sprite: elder
         x: 250
         y: 100
-    text: "That night, an elder tells a story about the Great Turtle who carries the earth on its back. You fall asleep listening. You have no books, no toys, no possessions beyond the clothes on your back. But you are alive.\n\nThe seasons will turn. You will grow, if you are lucky."
+    text: "That night, an elder tells a story about the Great Turtle who carries the earth on its back. You fall asleep listening. No books, no toys, no possessions. But you are alive. The seasons will turn. You will grow, if you are lucky."
     effects:
       - stat: warmth
         delta: 5

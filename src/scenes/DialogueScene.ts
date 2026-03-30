@@ -66,14 +66,8 @@ export class DialogueScene extends Phaser.Scene {
   private fullText: string = '';
   private typewriteTimer?: Phaser.Time.TimerEvent;
   private continuePrompt!: Phaser.GameObjects.Text;
-  private scrollY: number = 0;
-  private maxScroll: number = 0;
   private visibleHeight: number = 0;
-  private scrollIndicator!: Phaser.GameObjects.Text;
-  private scrollDownIndicator!: Phaser.GameObjects.Text;
   private chapterLabel!: Phaser.GameObjects.Text;
-  private touchStartY: number = 0;
-  private isTouchScrolling: boolean = false;
   private currentMood?: 'beauty' | 'spirit';
   private currentBorderColor: number = DEFAULT_BORDER_COLOR;
   private borderShimmerTween?: Phaser.Tweens.Tween;
@@ -209,59 +203,12 @@ export class DialogueScene extends Phaser.Scene {
       repeat: -1,
     });
 
-    // Scroll indicator (fixed, top-right of box)
-    this.scrollIndicator = this.add.text(
-      width - BOX_MARGIN - BOX_PADDING - 10,
-      this.boxTop + 8,
-      '\u25b2',
-      { fontFamily: 'monospace', fontSize: '12px', color: '#444444' }
-    ).setOrigin(1, 0).setVisible(false);
-
-    // Down arrow — visible when content extends below the visible area
-    this.scrollDownIndicator = this.add.text(
-      width - BOX_MARGIN - BOX_PADDING - 10,
-      this.boxTop + this.boxHeight - 8,
-      '\u25bc',
-      { fontFamily: 'monospace', fontSize: '12px', color: '#666666' }
-    ).setOrigin(1, 1).setVisible(false);
-    this.tweens.add({
-      targets: this.scrollDownIndicator,
-      alpha: 0.3,
-      duration: 600,
-      yoyo: true,
-      repeat: -1,
-    });
-
     // Input
     this.input.keyboard!.on('keydown', this.handleInput, this);
 
-    // Mouse wheel scrolling
-    this.input.on('wheel', (_pointer: Phaser.Input.Pointer, _gameObjects: unknown[], _deltaX: number, deltaY: number) => {
-      this.scroll(deltaY > 0 ? 30 : -30);
-    });
-
-    // Touch / click: track drag for scrolling, tap for advance
-    this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
-      this.touchStartY = pointer.y;
-      this.isTouchScrolling = false;
-    });
-
-    this.input.on('pointermove', (pointer: Phaser.Input.Pointer) => {
-      if (!pointer.isDown) return;
-      const delta = this.touchStartY - pointer.y;
-      if (Math.abs(delta) > 8) {
-        this.isTouchScrolling = true;
-        this.scroll(delta);
-        this.touchStartY = pointer.y;
-      }
-    });
-
+    // Tap to advance
     this.input.on('pointerup', () => {
-      if (!this.isTouchScrolling) {
-        // It was a tap, not a drag — advance text
-        this.handleInput({ keyCode: 32 } as KeyboardEvent);
-      }
-      this.isTouchScrolling = false;
+      this.handleInput({ keyCode: 32 } as KeyboardEvent);
     });
 
     // Launch status HUD
@@ -453,16 +400,6 @@ export class DialogueScene extends Phaser.Scene {
       this.boxTop + this.boxHeight - 5
     );
 
-    // Update scroll indicator positions
-    this.scrollIndicator.setPosition(
-      width - BOX_MARGIN - BOX_PADDING - 10,
-      this.boxTop + 8
-    );
-    this.scrollDownIndicator.setPosition(
-      width - BOX_MARGIN - BOX_PADDING - 10,
-      this.boxTop + this.boxHeight - 8
-    );
-
     this.drawDialogueBox();
 
     // Launch StageScene behind this scene, passing initial data
@@ -471,13 +408,11 @@ export class DialogueScene extends Phaser.Scene {
     this.scene.bringToTop('StatusScene');
   }
 
-  private paginateText(text: string): string[] {
-    // Measure how many lines fit in the visible area
+  private paginateText(text: string, reserveLines: number = 0): string[] {
     const lineHeight = 15 + 6; // fontSize + lineSpacing
     const linesPerPage = Math.floor(this.visibleHeight / lineHeight);
     if (linesPerPage <= 0) return [text];
 
-    // Use a temporary text to get wrapped lines
     const textWidth = this.cameras.main.width - BOX_MARGIN * 2 - BOX_PADDING * 2;
     const tempText = this.add.text(0, 0, text, {
       ...TEXT_STYLE,
@@ -487,25 +422,35 @@ export class DialogueScene extends Phaser.Scene {
     const wrappedLines = tempText.getWrappedText(text);
     tempText.destroy();
 
-    if (wrappedLines.length <= linesPerPage) return [text];
+    const lastPageMax = Math.max(1, linesPerPage - reserveLines);
+    if (wrappedLines.length <= lastPageMax) return [text];
 
     const pages: string[] = [];
-    for (let i = 0; i < wrappedLines.length; i += linesPerPage) {
-      pages.push(wrappedLines.slice(i, i + linesPerPage).join('\n'));
+    let i = 0;
+    while (i < wrappedLines.length) {
+      const remaining = wrappedLines.length - i;
+      // If what's left fits on the final page (with reserved space), take it all
+      if (remaining <= lastPageMax) {
+        pages.push(wrappedLines.slice(i).join('\n'));
+        break;
+      }
+      // Fill a full page, but ensure enough lines remain for the last page
+      const take = Math.min(linesPerPage, remaining - lastPageMax);
+      pages.push(wrappedLines.slice(i, i + take).join('\n'));
+      i += take;
     }
     return pages;
   }
 
   private showPage(pageIndex: number): void {
     this.textObject.setText(this.pages[pageIndex]);
-    this.resetScroll();
+    this.contentContainer.y = this.boxTop + BOX_PADDING;
   }
 
   private advancePage(): boolean {
     if (this.currentPage < this.pages.length - 1) {
       this.currentPage++;
       this.showPage(this.currentPage);
-      // Show continue prompt if more pages remain
       this.continuePrompt.setVisible(this.currentPage < this.pages.length - 1);
       if (this.currentPage >= this.pages.length - 1 && this.paginationCallback) {
         this.paginationCallback();
@@ -515,48 +460,6 @@ export class DialogueScene extends Phaser.Scene {
       return true;
     }
     return false;
-  }
-
-  private updateScroll(): void {
-    const contentHeight = this.getContentHeight();
-    this.maxScroll = Math.max(0, contentHeight - this.visibleHeight);
-    this.scrollY = Math.min(this.scrollY, this.maxScroll);
-    this.scrollY = Math.max(0, this.scrollY);
-    this.contentContainer.y = (this.boxTop + BOX_PADDING) - this.scrollY;
-    this.scrollIndicator.setVisible(this.scrollY > 0);
-    this.scrollDownIndicator.setVisible(this.maxScroll > 0 && this.scrollY < this.maxScroll);
-  }
-
-  private scroll(delta: number): void {
-    this.scrollY += delta;
-    this.updateScroll();
-  }
-
-  private scrollToBottom(): void {
-    this.scrollY = this.maxScroll;
-    this.updateScroll();
-  }
-
-  private resetScroll(): void {
-    this.scrollY = 0;
-    this.updateScroll();
-  }
-
-  private getContentHeight(): number {
-    let bottom = this.textObject.height;
-    for (const choice of this.choiceObjects) {
-      const choiceBottom = choice.y + choice.height;
-      if (choiceBottom > bottom) bottom = choiceBottom;
-    }
-    return bottom;
-  }
-
-  private autoScrollDuringTypewrite(): void {
-    const contentHeight = this.textObject.height;
-    if (contentHeight > this.visibleHeight) {
-      this.scrollY = contentHeight - this.visibleHeight;
-      this.updateScroll();
-    }
   }
 
   private async loadAndStart(eventName: string): Promise<void> {
@@ -578,11 +481,11 @@ export class DialogueScene extends Phaser.Scene {
   private presentNode(node: NarrativeNode): void {
     this.clearChoices();
     this.continuePrompt.setVisible(false);
-    this.resetScroll();
     this.isPaginating = false;
     this.paginationCallback = undefined;
     this.pages = [];
     this.currentPage = 0;
+    this.contentContainer.y = this.boxTop + BOX_PADDING;
 
     // Apply or clear mood
     if (node.mood) {
@@ -613,7 +516,6 @@ export class DialogueScene extends Phaser.Scene {
       };
       const wasAlreadyStaged = this.stageMode;
       this.launchStage(stageData);
-      // Emit only if stage was already running (first launch gets data via param)
       if (wasAlreadyStaged) {
         this.events.emit('stageUpdate', stageData);
       }
@@ -621,15 +523,24 @@ export class DialogueScene extends Phaser.Scene {
       this.events.emit('stageUpdate', { hide_characters: node.hide_characters });
     }
 
-    // Handle movement tweens before text
+    // How many lines to reserve on the last page for choices
+    const availableChoices = (node.choices && node.choices.length > 0)
+      ? this.engine.getAvailableChoices()
+      : [];
+    // 24px gap before choices + 28px per choice, in units of 21px text lines
+    const choicePixels = availableChoices.length > 0
+      ? 24 + availableChoices.length * 28
+      : 0;
+    const reserveLines = Math.ceil(choicePixels / (15 + 6));
+
     const startText = () => {
-      const onTextComplete = () => {
+      const onLastPage = () => {
         if (node.roll) {
           this.continuePrompt.setVisible(true);
         } else if (node.random && node.random.length > 0) {
           this.continuePrompt.setVisible(true);
-        } else if (node.choices && node.choices.length > 0) {
-          this.showChoices(this.engine.getAvailableChoices());
+        } else if (availableChoices.length > 0) {
+          this.showChoices(availableChoices);
         } else if (node.next_event) {
           this.continuePrompt.setVisible(true);
         } else if (node.next) {
@@ -639,7 +550,7 @@ export class DialogueScene extends Phaser.Scene {
         }
       };
 
-      this.typewriteText(node.text, onTextComplete);
+      this.typewriteText(node.text, onLastPage, reserveLines);
     };
 
     if (node.move && node.move.length > 0 && this.stageMode) {
@@ -654,23 +565,35 @@ export class DialogueScene extends Phaser.Scene {
     this.scene.get('StatusScene').events.emit('updateStats');
   }
 
-  private typewriteText(text: string, onComplete: () => void): void {
+  private typewriteText(text: string, onLastPage: () => void, reserveLines: number = 0): void {
+    this.pages = this.paginateText(text, reserveLines);
+    this.currentPage = 0;
+    this.fullText = this.pages[0];
+
+    if (this.pages.length > 1) {
+      this.isPaginating = true;
+      this.paginationCallback = onLastPage;
+    }
+
     this.isTypewriting = true;
-    this.fullText = text;
     this.textObject.setText('');
 
     let charIndex = 0;
+    const pageText = this.pages[0];
     this.typewriteTimer = this.time.addEvent({
       delay: 12,
-      repeat: text.length - 1,
+      repeat: pageText.length - 1,
       callback: () => {
         charIndex++;
-        this.textObject.setText(text.substring(0, charIndex));
-        this.autoScrollDuringTypewrite();
-        if (charIndex >= text.length) {
+        this.textObject.setText(pageText.substring(0, charIndex));
+        if (charIndex >= pageText.length) {
           this.isTypewriting = false;
-          this.updateScroll();
-          onComplete();
+          if (this.pages.length > 1) {
+            // More pages — show continue prompt for paging
+            this.continuePrompt.setVisible(true);
+          } else {
+            onLastPage();
+          }
         }
       },
     });
@@ -680,10 +603,8 @@ export class DialogueScene extends Phaser.Scene {
     if (this.typewriteTimer) {
       this.typewriteTimer.destroy();
     }
-    this.textObject.setText(this.fullText);
+    this.textObject.setText(this.pages[this.currentPage]);
     this.isTypewriting = false;
-    this.updateScroll();
-    this.scrollToBottom();
   }
 
   private showText(text: string): void {
@@ -715,7 +636,6 @@ export class DialogueScene extends Phaser.Scene {
     this.contentContainer.add(this.cursorObject);
     this.cursorObject.setVisible(true);
     this.updateChoiceHighlight();
-    this.scrollToBottom();
   }
 
   private clearChoices(): void {
@@ -819,7 +739,6 @@ export class DialogueScene extends Phaser.Scene {
       this.scene.start('TitleScene');
     });
     this.contentContainer.add(endText);
-    this.scrollToBottom();
   }
 
   private resolveAfterSkip(node: NarrativeNode): void {
@@ -841,13 +760,21 @@ export class DialogueScene extends Phaser.Scene {
   private handleInput(event: KeyboardEvent): void {
     const key = event.keyCode;
 
-    // If typewriting, skip on any key
+    // If typewriting, skip to end of current page
     if (this.isTypewriting) {
       this.skipTypewrite();
-      const node = this.engine.getCurrentNode();
-      if (node) {
-        this.resolveAfterSkip(node);
+      if (this.pages.length > 1 && this.currentPage < this.pages.length - 1) {
+        this.continuePrompt.setVisible(true);
+      } else {
+        const node = this.engine.getCurrentNode();
+        if (node) this.resolveAfterSkip(node);
       }
+      return;
+    }
+
+    // If paginating through text, advance to next page
+    if (this.isPaginating && (key === Phaser.Input.Keyboard.KeyCodes.ENTER || key === Phaser.Input.Keyboard.KeyCodes.SPACE)) {
+      this.advancePage();
       return;
     }
 
@@ -865,7 +792,7 @@ export class DialogueScene extends Phaser.Scene {
       return;
     }
 
-    // Continue prompt (auto-advance, chain event, or just waiting)
+    // Continue prompt (advance to next node, chain event, resolve roll/random)
     if (key === Phaser.Input.Keyboard.KeyCodes.ENTER || key === Phaser.Input.Keyboard.KeyCodes.SPACE) {
       const node = this.engine.getCurrentNode();
       if (node?.roll) {

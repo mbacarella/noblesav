@@ -169,15 +169,25 @@ nodes:
         sprite: player
         x: 350
         y: 100
+    text: "Second dawn. Mist sits in the hollows. The forest is absolutely still. A spider web catches the light between two branches. You understand why the elders say the forest is alive."
+    effects:
+      - stat: morale
+        delta: 10
+    next: hunt_day_three
+
+  - id: hunt_day_three
+    scene: forest
+    characters:
+      - id: player
+        sprite: player
+        x: 350
+        y: 100
       - id: broken_bow
         sprite: warrior
         x: 250
         y: 97
         facing: right
-    text: "Second dawn. Mist sits in the hollows. The forest is absolutely still. A spider web catches the light between two branches. You understand why the elders say the forest is alive.\n\nThird morning — a buck in a clearing, fifty paces out. Broken-Bow gestures for you to take the shot. Your hands shake."
-    effects:
-      - stat: morale
-        delta: 10
+    text: "Third morning — a buck in a clearing, fifty paces out. Broken-Bow gestures for you to take the shot. Your hands shake."
     choices:
       - text: "Take the shot"
         next: hunt_shoot
