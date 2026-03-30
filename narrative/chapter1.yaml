@@ -1,0 +1,603 @@
+event: chapter1
+nodes:
+
+  # === OPENING: AGES 5-7, LEARNING THE WORLD ===
+
+  - id: ch1_open
+    scene: forest
+    characters:
+      - id: stands_in_smoke
+        sprite: grandmother
+        x: 180
+        y: 95
+      - id: player
+        sprite: child
+        x: 300
+        y: 102
+    text: "You are seven. Play and work are the same thing. There is no childhood as anyone in the future will understand it.\n\nAn older woman named Stands-in-Smoke takes the children out to learn plants every spring. Some of last year's group are not here anymore. She does not mention them."
+    next: plant_test
+
+  - id: plant_test
+    scene: forest
+    characters:
+      - id: stands_in_smoke
+        sprite: grandmother
+        x: 200
+        y: 95
+        facing: right
+      - id: player
+        sprite: child
+        x: 300
+        y: 102
+    text: "She holds up two roots. They look almost identical. One is wild parsnip — food. The other is water hemlock — one of the most poisonous plants on the continent. 'Which one do you eat?'"
+    choices:
+      - text: "Point to the one on the left"
+        next: plant_left
+      - text: "Point to the one on the right"
+        next: plant_right
+      - text: "Say you don't know"
+        next: plant_honest
+
+  - id: plant_left
+    scene: forest
+    characters:
+      - id: stands_in_smoke
+        sprite: grandmother
+        x: 200
+        y: 95
+    text: "Stands-in-Smoke nods. You are correct — or lucky, which here amounts to the same thing. She shows you the difference: the stem, the smell, the way the leaves branch. You will remember this for the rest of your life, because the alternative is dying."
+    effects:
+      - set_flag: knows_hemlock
+      - stat: standing
+        delta: 5
+    next: plant_aftermath
+
+  - id: plant_right
+    scene: forest
+    characters:
+      - id: stands_in_smoke
+        sprite: grandmother
+        x: 200
+        y: 95
+        facing: right
+    text: "Stands-in-Smoke slaps the root out of your hand. 'That one kills you. Stomach cramps, seizures, dead in an hour.' She is not angry. She is terrified — for you. She shows you the difference. The fear is strong enough to last."
+    effects:
+      - set_flag: knows_hemlock
+      - stat: morale
+        delta: -5
+    next: plant_aftermath
+
+  - id: plant_honest
+    scene: forest
+    characters:
+      - id: stands_in_smoke
+        sprite: grandmother
+        x: 200
+        y: 95
+    text: "'Good,' Stands-in-Smoke says. 'Not knowing and saying so is how you stay alive. Guessing is how you die.' She makes you smell them, break them, memorize the leaves. Two years ago, a boy guessed. They found him by the creek, already stiff."
+    effects:
+      - set_flag: knows_hemlock
+      - stat: morale
+        delta: 5
+      - set_flag: cautious_nature
+    next: plant_aftermath
+
+  - id: plant_aftermath
+    scene: forest
+    characters:
+      - id: stands_in_smoke
+        sprite: grandmother
+        x: 150
+        y: 95
+      - id: player
+        sprite: child
+        x: 280
+        y: 102
+    text: "Over the following weeks, you learn thirty plants. Which bark stops bleeding. Which leaves ease pain. Which berries will empty your stomach for two days. This is your education. There are no books. Everything known must be spoken aloud and remembered, or it is lost forever."
+    next: summer_beauty
+
+  - id: summer_beauty
+    mood: beauty
+    scene: forest
+    text: "But the forest in summer is something no one alive in the future will ever see. The canopy is so thick the light comes through green and gold. You find wild strawberries — tiny, sweeter than anything you have ever tasted. You eat them until your fingers are red and lie on your back in the moss and for a whole afternoon you are not hungry and not afraid and the world is very beautiful."
+    effects:
+      - stat: morale
+        delta: 15
+    next: first_death
+
+  # === FIRST ENCOUNTERS WITH DEATH ===
+
+  - id: first_death
+    scene: river
+    characters:
+      - id: catches_nothing
+        sprite: child
+        x: 320
+        y: 97
+      - id: player
+        sprite: child
+        x: 180
+        y: 105
+    text: "Summer. The river is high. A boy named Catches-Nothing — your age, born the same winter — wades out past the shallows on a dare. He steps into a hole where the bottom drops away. He goes under. He comes up once. He goes under again."
+    effects:
+      - stat: morale
+        delta: -10
+    choices:
+      - text: "Run into the water after him"
+        next: rescue_attempt
+      - text: "Run to get the adults"
+        next: get_adults
+      - text: "Freeze — you can't move"
+        next: freeze
+
+  - id: rescue_attempt
+    scene: river
+    characters:
+      - id: player
+        sprite: child
+        x: 300
+        y: 100
+    text: "You plunge in. The current grabs you. You reach the spot where he went down but there is nothing — just brown water moving fast. An older boy drags you back by your hair. They find Catches-Nothing downstream the next morning."
+    effects:
+      - stat: health
+        delta: -5
+      - stat: standing
+        delta: 10
+      - stat: morale
+        delta: -10
+      - set_flag: tried_rescue
+    next: after_drowning
+
+  - id: get_adults
+    scene: village
+    characters:
+      - id: player
+        sprite: child
+        x: 200
+        y: 100
+      - id: warrior1
+        sprite: warrior
+        x: 350
+        y: 95
+    text: "You run. By the time you return with three men, the water is smooth and empty. They dive in anyway. They find him the next morning downstream, caught in a root tangle."
+    effects:
+      - stat: morale
+        delta: -10
+    next: after_drowning
+
+  - id: freeze
+    scene: river
+    characters:
+      - id: player
+        sprite: child
+        x: 180
+        y: 105
+    text: "Your body locks up. You stand on the bank and watch the water swirl. It is over in less than a minute. This freezing will happen again at other moments when the world breaks open and shows you what it really is."
+    effects:
+      - stat: morale
+        delta: -15
+      - set_flag: freezes_in_crisis
+    next: after_drowning
+
+  - id: after_drowning
+    scene: village
+    text: "There is no grief counselor. Catches-Nothing's mother wails for two days and then stops because she has other children to feed. The children go back to the river within days. There is nowhere else to swim."
+    next: infected_cut
+
+  - id: infected_cut
+    scene: longhouse
+    characters:
+      - id: bright_bird
+        sprite: child
+        x: 250
+        y: 100
+      - id: medicine_man
+        sprite: elder
+        x: 350
+        y: 95
+    text: "Autumn. A girl called Bright-Bird cuts her foot on a shell by the river. A small cut. She washes it in the river, which is full of things no one here knows exist.\n\nWithin three days, her foot is swollen. Within five, red lines creep up her leg. The medicine man packs it with chewed herbs. The herbs do nothing. The infection is in her blood."
+    effects:
+      - stat: morale
+        delta: -5
+    next: bright_bird_dies
+
+  - id: bright_bird_dies
+    scene: longhouse
+    characters:
+      - id: mother_bb
+        sprite: mother
+        x: 250
+        y: 100
+    text: "She dies on the eighth day. Nine years old. The fastest runner in the village, killed by a cut that a tube of Neosporin would have fixed. By next summer, you will sometimes forget her name. This is not cruelty. It is how the mind survives here."
+    effects:
+      - stat: morale
+        delta: -10
+      - set_flag: witnessed_infection_death
+    next: winter_approaches
+
+  # === THE HUNGER: LATE WINTER ===
+
+  - id: winter_approaches
+    scene: longhouse
+    text: "You are nine. This winter begins early. The first snow falls before the last corn is harvested. By midwinter, the stored food is running low. Hunting parties come back empty-handed. The dried fish is almost gone. People simply start eating less."
+    effects:
+      - stat: warmth
+        delta: -10
+      - stat: hunger
+        delta: -20
+    next: elders_choice
+
+  - id: elders_choice
+    scene: longhouse
+    characters:
+      - id: grandmother
+        sprite: grandmother
+        x: 200
+        y: 97
+      - id: player
+        sprite: child
+        x: 320
+        y: 102
+    text: "Your grandmother stops eating her full share. She gives portions to you and the younger children. She says she is not hungry, but her hands shake. Two other elders do the same. No one asks them to. It is simply what is done — the old feed the young with their own bodies."
+    effects:
+      - stat: morale
+        delta: -10
+    choices:
+      - text: "Refuse your grandmother's food"
+        next: refuse_food
+      - text: "Eat it — you're so hungry"
+        next: eat_food
+      - text: "Try to hunt on your own"
+        next: child_hunt
+
+  - id: refuse_food
+    scene: longhouse
+    characters:
+      - id: grandmother
+        sprite: grandmother
+        x: 200
+        y: 97
+    text: "'Eat,' your grandmother says. 'I have lived long enough. You have not lived at all.' She pushes the bowl back. You eat because she will not let you do otherwise. She will survive this winter. Barely. Two of the other elders will not."
+    effects:
+      - stat: morale
+        delta: -5
+      - stat: hunger
+        delta: 5
+      - stat: standing
+        delta: 5
+    next: late_winter
+
+  - id: eat_food
+    scene: longhouse
+    characters:
+      - id: grandmother
+        sprite: grandmother
+        x: 200
+        y: 97
+    text: "You eat because you are starving and nine years old and the body's need is louder than the mind's guilt. Your grandmother watches with something like satisfaction. She is giving you the only thing she has left."
+    effects:
+      - stat: hunger
+        delta: 10
+      - stat: morale
+        delta: -5
+    next: late_winter
+
+  - id: child_hunt
+    scene: forest
+    characters:
+      - id: player
+        sprite: child
+        x: 250
+        y: 102
+    text: "You take a sharpened stick into the woods. The snow is knee-deep. After two hours, you cannot feel your feet. No tracks, no game, nothing. You come back with frostbitten toes. Your uncle does not laugh — he is coming back empty too."
+    effects:
+      - stat: health
+        delta: -10
+      - stat: warmth
+        delta: -10
+      - stat: hunger
+        delta: -5
+      - set_flag: early_hunter
+    next: late_winter
+
+  - id: late_winter
+    scene: field
+    text: "The Hunger Moon. Two infants die. A man collapses checking snare lines. You dream about food every night.\n\nSpring comes. It always does. You eat fiddleheads raw, on your knees in the mud. You have lost a tooth. Your ribs show. But you are alive."
+    effects:
+      - stat: hunger
+        delta: 5
+      - stat: health
+        delta: -5
+      - stat: warmth
+        delta: 10
+      - stat: morale
+        delta: 10
+    next: spring_geese
+
+  - id: spring_geese
+    mood: beauty
+    scene: field
+    text: "One morning you hear it before you see it — a sound like the sky tearing open. The geese are coming back. Thousands, in long ragged lines from horizon to horizon. The whole village stops and looks up. Even the dogs go quiet. The winter is over and the world is telling you so in a voice you can hear for miles."
+    effects:
+      - stat: morale
+        delta: 10
+    next: raid_intro
+
+  # === THE RAID ===
+
+  - id: raid_intro
+    scene: village
+    characters:
+      - id: runner
+        sprite: warrior
+        x: 350
+        y: 97
+        facing: left
+      - id: mother
+        sprite: mother
+        x: 400
+        y: 100
+        facing: left
+    text: "You are ten. A runner comes in bleeding. The Flint People are coming — angry about fishing weirs your clan built last autumn. They are armed.\n\nThe village erupts. The men grab weapons. Your mother pushes you toward the back of the longhouse. 'Stay here. Do not come out.'"
+    effects:
+      - stat: morale
+        delta: -10
+    choices:
+      - text: "Hide where you're told"
+        next: raid_hide
+      - text: "Sneak to where you can see what happens"
+        next: raid_watch
+      - text: "Try to run into the forest"
+        next: raid_run
+
+  - id: raid_hide
+    scene: longhouse
+    characters:
+      - id: player
+        sprite: child
+        x: 350
+        y: 102
+    text: "You press against the bark wall in the darkest corner. You put your hand over the smallest child's mouth. Outside: shouting, screaming, wet sounds, heavy sounds. A body hits the longhouse wall and slides down. You do not move for two hours."
+    effects:
+      - stat: morale
+        delta: -15
+    next: raid_aftermath
+
+  - id: raid_watch
+    scene: longhouse
+    characters:
+      - id: player
+        sprite: child
+        x: 300
+        y: 102
+    text: "You crawl to a gap in the bark wall. You see a man you know take a war club to the side of his head. You see him fall. You see what happens next. You will see it for the rest of your life, in the dark, just before sleep."
+    effects:
+      - stat: morale
+        delta: -20
+      - set_flag: witnessed_violence
+    next: raid_aftermath
+
+  - id: raid_run
+    scene: forest
+    characters:
+      - id: player
+        sprite: child
+        x: 180
+        y: 102
+      - id: enemy
+        sprite: warrior
+        x: 350
+        y: 95
+        facing: left
+    text: "A Flint People warrior spots you. He is maybe sixteen. He grabs you, you kick and bite, he throws you to the ground and moves on toward the fighting. You are alive because someone decided you were not worth killing."
+    effects:
+      - stat: health
+        delta: -5
+      - stat: morale
+        delta: -10
+      - set_flag: survived_capture_attempt
+    next: raid_aftermath
+
+  - id: raid_aftermath
+    scene: village
+    text: "Three men dead. Two women taken — they will become wives in the Flint People's village, willing or not. A young man is taken too, bound with rawhide. He will be a slave. Not the slavery of chains and plantations, but slavery all the same. Every tribe here practices it. No one questions it."
+    effects:
+      - stat: morale
+        delta: -5
+      - set_flag: survived_raid
+    next: raid_grief
+
+  - id: raid_grief
+    scene: village
+    characters:
+      - id: daughter
+        sprite: child
+        x: 250
+        y: 102
+    text: "One of the dead was Looks-Twice. He used to carve little animals from wood for the children. No one writes his name. No one carves a stone. His daughter, who is your age, does not play anymore."
+    effects:
+      - stat: morale
+        delta: -10
+    next: husbands
+
+  # === SOCIAL DYNAMICS ===
+
+  - id: husbands
+    scene: longhouse
+    characters:
+      - id: mother
+        sprite: mother
+        x: 200
+        y: 100
+      - id: broken_bow
+        sprite: warrior
+        x: 330
+        y: 95
+    text: "That summer, your mother takes a third husband — Broken-Bow, missing two fingers from frostbite. Your father died of a gut wound when you were three. The second drowned. Men die hunting, fighting, from infections and fevers. A woman who wants her children to eat needs a man who can bring back deer meat. That is the arrangement."
+    next: casual_violence
+
+  - id: casual_violence
+    scene: village
+    characters:
+      - id: crow_dog
+        sprite: warrior
+        x: 200
+        y: 95
+      - id: boy
+        sprite: child
+        x: 300
+        y: 102
+    text: "There are no laws here. No court, no judge, no jail. When two men disagree, the larger one usually wins.\n\nYou watch Crow-Dog beat a boy — not his son, just a boy who spilled dried fish — four times with a stick. The boy is eight. No one stops Crow-Dog. He is a good hunter and related to the chief. That is how justice works here. It doesn't."
+    effects:
+      - stat: morale
+        delta: -5
+    next: the_chief
+
+  - id: the_chief
+    scene: village
+    characters:
+      - id: heavy_hand
+        sprite: warrior
+        x: 250
+        y: 93
+    text: "The village chief is Heavy-Hand. He leads because he is large, violent, and his clan is the biggest. He is not elected. He is not wise. He is simply the man no one wants to cross."
+    next: aunt_conflict
+
+  - id: aunt_conflict
+    scene: village
+    characters:
+      - id: aunt
+        sprite: aunt
+        x: 180
+        y: 100
+      - id: heavy_hand
+        sprite: warrior
+        x: 350
+        y: 93
+        facing: left
+    text: "Your aunt publicly mocks Heavy-Hand's decision to move the fishing camp. She is right — the new location is worse. But being right is not what keeps you alive here.\n\nOne morning: screaming. Heavy-Hand has struck your aunt with a war club. She said something that embarrassed him in front of visiting warriors. He hit her once. She does not get up."
+    effects:
+      - stat: morale
+        delta: -20
+      - set_flag: aunt_murdered
+    next: aunt_nothing
+
+  - id: aunt_nothing
+    scene: longhouse
+    characters:
+      - id: mother
+        sprite: mother
+        x: 200
+        y: 100
+      - id: grandmother
+        sprite: grandmother
+        x: 330
+        y: 97
+    text: "Nothing happens to Heavy-Hand. Your mother weeps. The men look at the ground. He has thirty warriors. Your family has six adults. Everyone can count. There is no police to call, no court to appeal to, no written law.\n\nWithin a month, only your family still carries it. This is not a world that pauses for injustice."
+    effects:
+      - stat: morale
+        delta: -10
+      - stat: standing
+        delta: -5
+      - set_flag: knows_powerlessness
+    next: night_sky
+
+  - id: night_sky
+    mood: beauty
+    scene: night
+    text: "That autumn, you walk out after everyone is asleep. There is no light pollution. There are no cities. The entire arm of the galaxy is a river of light across the sky. You do not know what it is. You only know it is vast and does not care about Heavy-Hand or your aunt or anything. Somehow that is a comfort."
+    effects:
+      - stat: morale
+        delta: 10
+    next: toothache
+
+  # === THE TOOTHACHE ===
+
+  - id: toothache
+    scene: longhouse
+    characters:
+      - id: medicine_man
+        sprite: elder
+        x: 180
+        y: 95
+      - id: mother
+        sprite: mother
+        x: 320
+        y: 100
+      - id: uncle
+        sprite: warrior
+        x: 400
+        y: 97
+    text: "You are eleven. A dull ache in your jaw becomes agony within a week. Your cheek swells. You cannot chew.\n\nThe medicine man offers to pull it with a bone tool. Your mother says willow bark. Your uncle says endure — his whole bottom row is rotted and he is still alive."
+    effects:
+      - stat: health
+        delta: -5
+    choices:
+      - text: "Let the medicine man pull it"
+        next: tooth_pull
+      - text: "Try the willow bark"
+        next: tooth_willow
+      - text: "Endure it"
+        next: tooth_endure
+
+  - id: tooth_pull
+    scene: longhouse
+    characters:
+      - id: medicine_man
+        sprite: elder
+        x: 220
+        y: 95
+    text: "He grips the tooth with a carved bone tool and twists. No anesthetic. The tooth comes out in three pieces. The socket will hurt for weeks. But the deep ache stops. You are lucky — an abscess here, without antibiotics, can kill you."
+    effects:
+      - stat: health
+        delta: -5
+      - stat: morale
+        delta: 5
+      - set_flag: lost_tooth
+    next: growing_up
+
+  - id: tooth_willow
+    scene: longhouse
+    characters:
+      - id: mother
+        sprite: mother
+        x: 230
+        y: 100
+    text: "Willow bark contains something they will refine into aspirin in five hundred years. The pain dulls. But the tooth is still rotting. The infection sits there, walled off for now, waiting. It will come back — probably in winter, when your body is weakest."
+    effects:
+      - stat: health
+        delta: -5
+      - set_flag: tooth_rotting
+    next: growing_up
+
+  - id: tooth_endure
+    scene: longhouse
+    characters:
+      - id: player
+        sprite: child
+        x: 250
+        y: 102
+    text: "For three weeks, the pain is a living thing inside your face. Then the body walls off the infection. The acute pain fades to a dull ache that will be with you for years. Your uncle was right. You are still alive. This is the standard of medicine here: not dying."
+    effects:
+      - stat: health
+        delta: -10
+      - stat: morale
+        delta: -10
+      - set_flag: tooth_abscessed
+    next: growing_up
+
+  # === GROWING UP ===
+
+  - id: growing_up
+    scene: night
+    characters:
+      - id: player
+        sprite: child
+        x: 250
+        y: 100
+    text: "You are twelve. You have watched friends die from things that should not kill anyone. You are starting to look at the adults differently — not as protectors, but as people doing exactly what you are doing. Guessing. Hoping. Enduring.\n\nAdolescence is coming. You have survived childhood. The hard part is just beginning."
+    effects:
+      - stat: morale
+        delta: 5
+      - set_flag: chapter1_complete
+    next_event: chapter2

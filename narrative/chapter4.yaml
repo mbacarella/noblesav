@@ -1,0 +1,333 @@
+event: chapter4
+nodes:
+
+  # === THE BODY FAILS ===
+
+  - id: ch4_open
+    scene: longhouse
+    characters:
+      - id: player
+        sprite: player
+        x: 280
+        y: 98
+    text: "You are thirty-one. Your right hand will not straighten. Arthritis in both hands and your knee. Four missing teeth, three rotting. A shoulder that cannot lift past your ear. A scar across your ribs. A cough every winter. Your eyesight weakening.\n\nIn the modern world, you would be starting a career. Here, you are entering the final stretch."
+    effects:
+      - stat: health
+        delta: -10
+    next: watching_children
+
+  # === WATCHING THE CYCLE ===
+
+  - id: watching_children
+    scene: forest
+    characters:
+      - id: stands-early
+        sprite: child
+        x: 320
+        y: 97
+      - id: player
+        sprite: player
+        x: 200
+        y: 100
+    text: "Stands-Early is ten, learning to hunt. Better than you were — fast, quiet, patient. You watch him track a deer and feel pride and grief at the same time, because you know what is coming for him.\n\nYour daughter holds up a root and asks if it is food or poison. She gets it right. The same crack. She will face everything you faced."
+    effects:
+      - stat: morale
+        delta: 5
+    next: cycle_violence
+
+  - id: cycle_violence
+    scene: village
+    characters:
+      - id: heavy-hand
+        sprite: warrior
+        x: 340
+        y: 97
+      - id: strikes-first
+        sprite: warrior
+        x: 380
+        y: 99
+    text: "Heavy-Hand is still chief, nearly forty. His son Strikes-First is worse. The village lives under them the way it always has. Power here is a stone that sits where it lands."
+    effects:
+      - stat: morale
+        delta: -10
+    next: grandmother_death
+
+  # === GRANDMOTHER'S DEATH ===
+
+  - id: grandmother_death
+    scene: longhouse
+    characters:
+      - id: grandmother
+        sprite: grandmother
+        x: 300
+        y: 98
+      - id: player
+        sprite: player
+        x: 220
+        y: 100
+    text: "Your grandmother dies in her sleep in early winter. Perhaps fifty-five. The best death available here.\n\nWith her dies everything she knew that she did not pass on. The songs she never sang. The names of people who died before you were born. Every death is a library burning."
+    effects:
+      - stat: morale
+        delta: -15
+    next: grandmother_beauty
+
+  - id: grandmother_beauty
+    scene: river
+    characters:
+      - id: player
+        sprite: player
+        x: 270
+        y: 100
+    text: "You bury her near the river. That night, the first heavy snow falls. By morning, the burial ground is smooth and white and unmarked. You know exactly where she is, and your aunt, and Small-Rain if she did not survive. The snow covers all of them equally."
+    effects:
+      - stat: morale
+        delta: 5
+    next: harsh_winter
+
+  # === THE HARDEST WINTER ===
+
+  - id: harsh_winter
+    scene: longhouse
+    characters:
+      - id: player
+        sprite: player
+        x: 250
+        y: 98
+      - id: walks-in-shade
+        sprite: mother
+        x: 320
+        y: 100
+    text: "You are thirty-four. The worst winter of your life. Snow starts in early autumn. The temperature cracks trees. By midwinter, the food is gone — not low, gone. Dogs killed for meat. People boiling hide and bark. Children are dying."
+    effects:
+      - stat: warmth
+        delta: -20
+      - stat: hunger
+        delta: -20
+      - stat: health
+        delta: -10
+      - stat: morale
+        delta: -15
+    next: winter_choice
+
+  - id: winter_choice
+    scene: longhouse
+    characters:
+      - id: walks-in-shade
+        sprite: mother
+        x: 300
+        y: 98
+      - id: stands-early
+        sprite: child
+        x: 360
+        y: 95
+      - id: player
+        sprite: player
+        x: 200
+        y: 100
+    text: "Walks-in-Shade coughs blood. Your children are bones with eyes. There is enough food for some of you. Not all."
+    choices:
+      - text: "Give your food to your family"
+        next: winter_sacrifice
+      - text: "Share equally — everyone eats or no one eats"
+        next: winter_equal
+      - text: "Take the children and leave the village"
+        next: winter_leave
+
+  - id: winter_sacrifice
+    scene: longhouse
+    characters:
+      - id: player
+        sprite: player
+        x: 190
+        y: 100
+      - id: walks-in-shade
+        sprite: mother
+        x: 290
+        y: 98
+    text: "You stop eating. You say you ate while checking snare lines. They know you are lying. Walks-in-Shade looks at you the way your grandmother looked at you twenty-five years ago. The cycle completes. You are the elder now."
+    effects:
+      - stat: hunger
+        delta: -25
+      - stat: health
+        delta: -20
+      - stat: morale
+        delta: 10
+    next: winter_endurance
+
+  - id: winter_equal
+    scene: longhouse
+    characters:
+      - id: player
+        sprite: player
+        x: 190
+        y: 100
+      - id: walks-in-shade
+        sprite: mother
+        x: 290
+        y: 98
+    text: "You divide everything equally. It is not enough for anyone, but it is fair. The children gnaw boiled hide. You eat your share in three bites and the hunger is still screaming."
+    effects:
+      - stat: hunger
+        delta: -15
+      - stat: health
+        delta: -10
+    next: winter_endurance
+
+  - id: winter_leave
+    scene: forest
+    characters:
+      - id: player
+        sprite: player
+        x: 180
+        y: 100
+      - id: walks-in-shade
+        sprite: mother
+        x: 280
+        y: 98
+    text: "You wrap the children in every fur you have and walk south through waist-deep snow. After half a day, you find a sheltered ravine with a south-facing rock wall. You build a fire. Barely enough."
+    effects:
+      - stat: warmth
+        delta: -15
+      - stat: health
+        delta: -10
+      - stat: hunger
+        delta: -10
+    next: winter_endurance
+
+  - id: winter_endurance
+    scene: village
+    characters:
+      - id: player
+        sprite: player
+        x: 270
+        y: 100
+    text: "The days blur. Cold, hunger, coughing in the dark. You think about dying — not with fear but practical curiosity.\n\nThen one morning in late February, the air is different. A drip of snowmelt. Pale blue sky. A bird calls — the first since autumn. You stand in weak sunlight and feel it on your bones."
+    effects:
+      - stat: warmth
+        delta: 10
+      - stat: morale
+        delta: 15
+    next: winter_survival
+
+  - id: winter_survival
+    scene: village
+    characters:
+      - id: player
+        sprite: player
+        x: 200
+        y: 100
+      - id: walks-in-shade
+        sprite: mother
+        x: 290
+        y: 98
+    text: "You survived. The village lost eleven. The longhouse feels empty. But the snow is melting and Walks-in-Shade's cough is easing and your son is already talking about where the deer will come."
+    effects:
+      - stat: hunger
+        delta: 15
+      - stat: health
+        delta: 5
+    next: reflection
+
+  # === REFLECTION ===
+
+  - id: reflection
+    scene: river
+    characters:
+      - id: player
+        sprite: player
+        x: 270
+        y: 100
+    text: "You are thirty-six. Your hands ache, your back aches, you are missing half your teeth. You are tired in a way sleep does not fix. You have never once been safe.\n\nYou try to remember everyone who has died. You cannot. There are too many."
+    effects:
+      - stat: morale
+        delta: -10
+    next: reflection_beauty
+
+  - id: reflection_beauty
+    mood: beauty
+    scene: river
+    text: "None of it is written down. When the last person who knew them dies, they will be gone completely. Your own name will follow.\n\nBut: the river is still here. The sound over the stones is the same as when you were five. The hawk still circles the thermals. You are a small thing in a large world, and the large world is very beautiful, and it will go on after you, and that is not sad. That is the shape of things."
+    effects:
+      - stat: morale
+        delta: 15
+    next: final_days
+
+  # === DEATH ===
+
+  - id: final_days
+    scene: river
+    characters:
+      - id: player
+        sprite: player
+        x: 240
+        y: 100
+      - id: walks-in-shade
+        sprite: mother
+        x: 310
+        y: 98
+    text: "You are thirty-eight. The cough does not leave with spring this time. Walking to the river winds you.\n\nAutumn. The maples turn again — the same fire Walks-in-Shade showed you twenty years ago. You walk down to the river together, slowly. She holds your arm. Not just for support. Also for affection."
+    effects:
+      - stat: health
+        delta: -20
+      - stat: morale
+        delta: 10
+    next: final_night
+
+  - id: final_night
+    scene: longhouse
+    characters:
+      - id: player
+        sprite: player
+        x: 250
+        y: 100
+      - id: walks-in-shade
+        sprite: mother
+        x: 330
+        y: 98
+    text: "One night in early winter, you wake to a quiet longhouse. The fire has burned low. You listen to the breathing — your wife, your children, everyone. The smoke rises through the roof and you can see one star through the gap. Steady and bright."
+    choices:
+      - text: "Close your eyes"
+        next: death
+      - text: "Keep watching the star"
+        next: death_star
+
+  - id: death_star
+    scene: night
+    characters:
+      - id: player
+        sprite: player
+        x: 260
+        y: 100
+    text: "You think about your mother, your grandmother, the Bear Clan woman. Walks-in-Shade saying 'the maples turned.' Your son bringing strawberries. The hawk, circling. The star is very bright. You watch it until your eyes close on their own."
+    effects:
+      - stat: morale
+        delta: 10
+    next: death
+
+  - id: death
+    scene: river
+    characters:
+      - id: walks-in-shade
+        sprite: mother
+        x: 250
+        y: 98
+      - id: stands-early
+        sprite: child
+        x: 330
+        y: 95
+    text: "You die just before dawn. Thirty-eight years old. You outlived your life expectancy by three.\n\nThey bury you near the river, near your grandmother, near everyone else. Stands-Early stands at the grave and does not cry. He will become a hunter. He will marry. Some of his children will die. He will die. The cycle will continue."
+    effects:
+      - set_flag: died
+    next: epilogue
+
+  # === EPILOGUE ===
+
+  - id: epilogue
+    scene: night
+    text: "You witnessed the deaths of roughly forty people you knew by name. You survived at least four famines. Fought in two wars over a fishing spot. Watched a chief murder a woman for speaking. Buried children. Pulled a tooth with a bone tool. Were treated by medicine men whose treatments were more dangerous than the diseases. Never read a word. Never wrote one."
+    next: epilogue_final
+
+  - id: epilogue_final
+    scene: night
+    text: "This was not unusual. This was ordinary. Short, painful, unrecorded.\n\nThe 'noble savage' was invented by eighteenth-century philosophers who never spent a night outside. Rousseau wrote about the 'state of nature' from a heated study in Paris.\n\nThe people who lived this life deserve to be remembered as they were — not as symbols or projections of someone else's guilt. As people. Who lived. And died. And were forgotten. Like almost everyone."
+    end: true

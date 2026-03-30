@@ -1,0 +1,278 @@
+event: prologue
+nodes:
+  - id: birth
+    scene: longhouse
+    characters:
+      - id: mother
+        sprite: mother
+        x: 200
+        y: 105
+      - id: grandmother
+        sprite: grandmother
+        x: 300
+        y: 100
+    text: "You are born in a bark-covered longhouse in the northeast woodlands. Late autumn. Your mother has been in labor for fourteen hours with no midwife — only your grandmother and two older women doing what they can.\n\nOn the fourth day, when it seems you will live, you are given a name. It is not written down. No one here has writing. Your name exists only in the mouths of the people around you."
+    random:
+      - fork_longhouse
+      - fork_aunt
+
+  # === PATH A: The Longhouse ===
+
+  - id: fork_longhouse
+    scene: longhouse
+    characters:
+      - id: mother
+        sprite: mother
+        x: 220
+        y: 105
+    text: "Your first winter is brutal. The longhouse is smoky and crowded — twelve families sharing the space. The fire keeps you alive but the smoke burns your lungs. Two infants do not survive to spring. You do, though you will carry the cough for months."
+    effects:
+      - stat: health
+        delta: -10
+      - set_flag: longhouse_child
+    next: longhouse_spring
+
+  - id: longhouse_spring
+    mood: beauty
+    scene: river
+    characters:
+      - id: mother
+        sprite: mother
+        x: 250
+        y: 95
+    text: "Spring. Your mother straps you to a cradleboard and carries you to the fields. You spend your first year watching her back as she works. The cradleboard presses your skull flat. It will stay that shape.\n\nOne evening in your second summer, she carries you to the river at dusk. Fireflies rise from the grass. She holds you on her hip in the shallows and hums something you will never remember — just vibration and warmth. This is the closest thing to safety that exists in your world."
+    effects:
+      - stat: morale
+        delta: 10
+    next: longhouse_toddler
+
+  - id: longhouse_toddler
+    scene: field
+    characters:
+      - id: mother
+        sprite: mother
+        x: 180
+        y: 100
+    text: "By the time you can walk, you have learned the most important rule: everything is trying to kill you. The river, the forest, the plants, the cold, other tribes. There is no safety net.\n\nYour mother plants corn, beans, and squash with stone tools. She is twenty-two and looks forty. She has never had a day of rest."
+    next: chapter_choice
+
+  # === PATH B: The Aunt ===
+
+  - id: fork_aunt
+    scene: longhouse
+    characters:
+      - id: grandmother
+        sprite: grandmother
+        x: 280
+        y: 102
+    text: "Your mother does not stop bleeding after the birth. The women pack the wound with moss. Your grandmother chants. Nothing works. She is dead before you are a day old. You will never know her face. No one here can draw it for you."
+    effects:
+      - stat: morale
+        delta: -15
+      - set_flag: motherless
+    next: aunt_takes_you
+
+  - id: aunt_takes_you
+    scene: longhouse
+    characters:
+      - id: aunt
+        sprite: aunt
+        x: 200
+        y: 102
+      - id: grandmother
+        sprite: grandmother
+        x: 320
+        y: 100
+    text: "Your mother's sister takes you. She already has four children and not enough milk. She is not cruel — she simply has nothing to spare. You are passed between women like a problem no one wants to own."
+    effects:
+      - stat: standing
+        delta: -10
+    next: aunt_winter
+
+  - id: aunt_winter
+    scene: longhouse
+    characters:
+      - id: aunt
+        sprite: aunt
+        x: 180
+        y: 102
+      - id: child
+        sprite: child
+        x: 340
+        y: 105
+    text: "Your first winter, you sleep furthest from the fire. You are sick constantly — a rattling cough that never clears. Your aunt's oldest son, who is seven, pinches you when no one is looking."
+    effects:
+      - stat: health
+        delta: -15
+      - stat: warmth
+        delta: -10
+    next: aunt_warmth
+
+  - id: aunt_warmth
+    mood: beauty
+    scene: longhouse
+    characters:
+      - id: bear_woman
+        sprite: mother
+        x: 250
+        y: 100
+    text: "But there is this: the woman from the Bear Clan who nursed you — she has no obligation to you, nothing. Yet sometimes she finds you and holds you against her chest. She lost her own child and something in her body still needs to hold one. You are too young to understand this. You only know that sometimes, for no reason, someone warm is there."
+    effects:
+      - stat: morale
+        delta: 10
+    next: aunt_learning
+
+  - id: aunt_learning
+    scene: village
+    characters:
+      - id: aunt
+        sprite: aunt
+        x: 160
+        y: 102
+      - id: child
+        sprite: child
+        x: 300
+        y: 105
+    text: "You learn to walk late. No one has time to help — you pull yourself up on longhouse posts and fall until you stop falling. By the time you can run, you have learned the central fact of your life: no one is coming to help you.\n\nThe other children know you are the one whose mother died. Your aunt does her duty but never calls you her child."
+    effects:
+      - stat: morale
+        delta: -5
+      - set_flag: self_reliant
+    next: chapter_choice
+
+  - id: chapter_choice
+    scene: village
+    text: "You are five years old. You have survived longer than many. The world stretches out before you — vast, green, and utterly indifferent to whether you live or die."
+    effects:
+      - stat: morale
+        delta: 5
+      - set_flag: survived_infancy
+    choices:
+      - text: "Follow the older children to the river"
+        next: river
+      - text: "Stay close to your mother in the fields"
+        next: fields
+      - text: "Wander toward the edge of the forest"
+        next: forest
+
+  - id: river
+    scene: river
+    characters:
+      - id: child
+        sprite: child
+        x: 320
+        y: 97
+    text: "The older children are catching crayfish. A boy named Runs-Fast dares you to cross to the big rock. The current is stronger than it looks. Last summer, a girl your age was swept away."
+    effects:
+      - stat: standing
+        delta: 5
+    choices:
+      - text: "Try to cross to the rock"
+        next: river_cross
+      - text: "Stay in the shallows"
+        next: river_safe
+
+  - id: river_cross
+    scene: river
+    characters:
+      - id: child
+        sprite: child
+        x: 350
+        y: 97
+    text: "The water reaches your chest and pulls. Your feet slip on mossy stones. You go under, water filling your nose. Then your hand finds the rock. The other children cheer. You have proven something, though you are not sure what."
+    effects:
+      - stat: standing
+        delta: 5
+      - stat: health
+        delta: -5
+      - set_flag: brave_child
+    choices:
+      - text: "Continue playing at the river"
+        next: river_afternoon
+      - text: "Go back to the village, shaken"
+        next: village_return
+
+  - id: river_safe
+    scene: river
+    characters:
+      - id: child
+        sprite: child
+        x: 280
+        y: 102
+      - id: child2
+        sprite: child
+        x: 340
+        y: 100
+    text: "You stay in the shallows. Runs-Fast calls you a coward. The word stings, but you are alive and dry. In this world, that counts for something."
+    effects:
+      - stat: morale
+        delta: -5
+      - set_flag: cautious_child
+    next: river_afternoon
+
+  - id: river_afternoon
+    scene: river
+    characters:
+      - id: child
+        sprite: child
+        x: 300
+        y: 100
+    text: "You eat a crayfish raw. It tastes like mud and river water. This is your life — small victories measured against constant, ordinary danger."
+    next: evening
+
+  - id: fields
+    scene: field
+    characters:
+      - id: mother
+        sprite: mother
+        x: 200
+        y: 100
+    text: "Your mother points to white berries. 'Never eat those. A child in the Wolf Clan ate them two summers ago. Dead before sundown.' She says it as a fact, not a warning. Death is not dramatic here. It is ordinary."
+    effects:
+      - stat: morale
+        delta: -5
+      - set_flag: knows_plants
+    next: evening
+
+  - id: forest
+    scene: forest
+    text: "The forest is enormous and you are very small. You find a clearing where sunlight comes through and sit among the ferns. It is beautiful. It is also where a hunting party killed three of your clan's warriors last autumn. Beauty and violence share the same ground here."
+    effects:
+      - set_flag: forest_child
+    next: evening
+
+  - id: village_return
+    scene: village
+    characters:
+      - id: grandmother
+        sprite: grandmother
+        x: 300
+        y: 100
+    text: "Your grandmother sees you coughing up river water and says nothing. She lost four of her own children. She knows the river could have taken you."
+    effects:
+      - stat: health
+        delta: -5
+    next: evening
+
+  - id: evening
+    scene: longhouse
+    characters:
+      - id: elder
+        sprite: elder
+        x: 250
+        y: 100
+    text: "That night, an elder tells a story about the Great Turtle who carries the earth on its back. You fall asleep listening. You have no books, no toys, no possessions beyond the clothes on your back. But you are alive.\n\nThe seasons will turn. You will grow, if you are lucky."
+    effects:
+      - stat: warmth
+        delta: 5
+      - stat: morale
+        delta: 5
+      - set_flag: prologue_complete
+    choices:
+      - text: "Continue to Chapter 1"
+        next: prologue_end
+
+  - id: prologue_end
+    scene: night
+    text: "This is not a story about heroes or villains. It is a story about what it costs to be human when the world offers you nothing but what you can take from it with your hands."
+    next_event: chapter1

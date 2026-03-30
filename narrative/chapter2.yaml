@@ -1,0 +1,723 @@
+event: chapter2
+nodes:
+
+  # === OPENING: THE THRESHOLD ===
+
+  - id: ch2_open
+    scene: forest
+    characters:
+      - id: player
+        sprite: child
+        x: 350
+        y: 100
+      - id: warrior_1
+        sprite: warrior
+        x: 180
+        y: 95
+      - id: warrior_2
+        sprite: warrior
+        x: 230
+        y: 98
+    text: "You are thirteen. The adults have started looking at you differently — not as a child to protect but as a body that can work, fight, and reproduce.\n\nThe men come for you on a cold morning. They take you and two other boys into the forest. You will not return for seven days."
+    effects:
+      - stat: morale
+        delta: -10
+    next: rite_first_day
+
+  # === THE RITE OF PASSAGE ===
+
+  - id: rite_first_day
+    scene: forest
+    characters:
+      - id: player
+        sprite: child
+        x: 300
+        y: 100
+      - id: warrior_1
+        sprite: warrior
+        x: 180
+        y: 95
+        facing: right
+    text: "The first two days, you do not eat. The third day, they cut you — shallow lines across your chest with sharpened flint, packed with ash to make them scar. Raised welts that will mark you as a man of your clan. There is no numbing. You bite a stick. One of the other boys screams."
+    effects:
+      - stat: health
+        delta: -15
+      - stat: hunger
+        delta: -15
+    next: rite_ordeal
+
+  - id: rite_ordeal
+    scene: night
+    characters:
+      - id: player
+        sprite: child
+        x: 300
+        y: 100
+    text: "The fourth night, you are sent into the woods alone. Naked, no weapon, no fire. The temperature drops below freezing. You dig into dead leaves and shake. Something moves in the darkness — a bear, a catamount, you never find out."
+    effects:
+      - stat: warmth
+        delta: -20
+      - stat: health
+        delta: -5
+    choices:
+      - text: "Stay completely still"
+        next: rite_still
+      - text: "Climb a tree"
+        next: rite_tree
+      - text: "Make noise to scare it off"
+        next: rite_noise
+
+  - id: rite_still
+    scene: night
+    characters:
+      - id: player
+        sprite: child
+        x: 300
+        y: 103
+    text: "You do not move. The thing comes close enough that you smell it — musk, wet fur, something rotten. It breathes on you. Then moves on. You lie in the leaves until dawn, shaking. When the men come, they say nothing. You survived. That is the test."
+    effects:
+      - stat: morale
+        delta: 5
+      - set_flag: rite_patience
+    next: rite_other_boy
+
+  - id: rite_tree
+    scene: night
+    characters:
+      - id: player
+        sprite: child
+        x: 280
+        y: 95
+    text: "You scramble up an oak, bark tearing your skin. Twenty feet up, you wrap around a branch. Below, something circles the base and loses interest. You stay until dawn, frozen and bleeding. When the men find you, one nods. Surviving is surviving."
+    effects:
+      - stat: health
+        delta: -5
+      - set_flag: rite_climber
+    next: rite_other_boy
+
+  - id: rite_noise
+    scene: night
+    characters:
+      - id: player
+        sprite: child
+        x: 280
+        y: 100
+    text: "You scream into the darkness. Not courage — terror with nowhere to go. Whatever is out there crashes away. At dawn, one of the men says you sounded like a dying elk. Not a compliment, but you are alive."
+    effects:
+      - stat: standing
+        delta: -5
+      - set_flag: rite_screamer
+    next: rite_other_boy
+
+  - id: rite_other_boy
+    scene: forest
+    characters:
+      - id: player
+        sprite: child
+        x: 200
+        y: 98
+      - id: warrior_1
+        sprite: warrior
+        x: 300
+        y: 95
+    text: "The boy who screamed during the cutting — Thin-Dog — is not at the meeting point. They find him at the bottom of a ravine. His leg is broken, bone pushing through skin. They splint it and carry him back.\n\nWithin days, the leg swells and turns dark. The smell starts on the third day. In the modern world, a surgeon would set the bone and prescribe antibiotics. Here, the infection reaches his blood in ten days. He is dead in twelve."
+    effects:
+      - stat: morale
+        delta: -15
+      - set_flag: rite_complete
+    next: rite_aftermath
+
+  - id: rite_aftermath
+    mood: beauty
+    scene: river
+    characters:
+      - id: player
+        sprite: player
+        x: 300
+        y: 100
+    text: "You are a man now. The scars prove it. You earned them the same week Thin-Dog earned a hole in the ground.\n\nThe men walk you back along the river. Morning light turns everything gold — the water, the mist, the birches. No one speaks. Your chest is raw but you are walking with them now, not behind them. A heron lifts off the river, enormous and silent. Something has changed in you. You can feel it in your spine."
+    effects:
+      - stat: morale
+        delta: 15
+    next: first_hunt_intro
+
+  # === THE FIRST HUNT ===
+
+  - id: first_hunt_intro
+    scene: forest
+    characters:
+      - id: player
+        sprite: player
+        x: 320
+        y: 100
+      - id: broken_bow
+        sprite: warrior
+        x: 200
+        y: 97
+        facing: right
+    text: "Summer. Broken-Bow takes you deer hunting. He gives you a bow — the one no one else wanted, string frayed. You track for two days. Broken-Bow reads signs you cannot see: a bent twig, scuffed moss, droppings. This knowledge took him thirty years."
+    effects:
+      - stat: hunger
+        delta: -10
+    next: hunt_day_two
+
+  - id: hunt_day_two
+    mood: beauty
+    scene: forest
+    characters:
+      - id: player
+        sprite: player
+        x: 350
+        y: 100
+      - id: broken_bow
+        sprite: warrior
+        x: 250
+        y: 97
+        facing: right
+    text: "Second dawn. Mist sits in the hollows. The forest is absolutely still. A spider web catches the light between two branches. You understand why the elders say the forest is alive.\n\nThird morning — a buck in a clearing, fifty paces out. Broken-Bow gestures for you to take the shot. Your hands shake."
+    effects:
+      - stat: morale
+        delta: 10
+    choices:
+      - text: "Take the shot"
+        next: hunt_shoot
+      - text: "Try to get closer"
+        next: hunt_closer
+      - text: "Signal Broken-Bow to take it"
+        next: hunt_defer
+
+  - id: hunt_shoot
+    scene: forest
+    characters:
+      - id: player
+        sprite: player
+        x: 300
+        y: 100
+      - id: broken_bow
+        sprite: warrior
+        x: 200
+        y: 97
+    text: "You draw and release. The arrow flies wide by a full arm's length. The deer bolts. Three days of tracking, gone in a heartbeat. Broken-Bow says nothing. The silence is worse than anything he could say."
+    effects:
+      - stat: hunger
+        delta: -10
+      - stat: standing
+        delta: -5
+      - stat: morale
+        delta: -10
+    next: hunt_return_empty
+
+  - id: hunt_closer
+    scene: forest
+    characters:
+      - id: player
+        sprite: player
+        x: 320
+        y: 103
+    text: "You drop to your belly and crawl. Twenty paces. A twig snaps. The deer stares. You freeze. It goes back to browsing. Five more paces. At thirty paces, even with a bad bow, you have a chance."
+    roll:
+      stat: health
+      dc: 50
+      success: hunt_hit
+      failure: hunt_miss_close
+
+  - id: hunt_hit
+    scene: forest
+    characters:
+      - id: player
+        sprite: player
+        x: 280
+        y: 100
+      - id: broken_bow
+        sprite: warrior
+        x: 200
+        y: 97
+        facing: right
+    text: "The arrow hits behind the shoulder. Not a clean kill — it runs. You track the blood for two hours. You find it collapsed in a thicket. Broken-Bow hands you his knife. Ending it is harder than you expected. The eyes watch you. You do it anyway, because the village needs meat and the deer needs to stop suffering."
+    effects:
+      - stat: hunger
+        delta: 20
+      - stat: standing
+        delta: 15
+      - stat: morale
+        delta: 5
+      - set_flag: first_kill
+    next: hunt_return_full
+
+  - id: hunt_miss_close
+    scene: forest
+    characters:
+      - id: player
+        sprite: player
+        x: 300
+        y: 100
+      - id: broken_bow
+        sprite: warrior
+        x: 200
+        y: 97
+    text: "The arrow clips a branch. The deer is gone before you can breathe. Broken-Bow has missed more shots than you have taken. But the walk back with nothing takes two days on an empty stomach."
+    effects:
+      - stat: hunger
+        delta: -15
+      - stat: morale
+        delta: -10
+    next: hunt_return_empty
+
+  - id: hunt_defer
+    scene: forest
+    characters:
+      - id: player
+        sprite: player
+        x: 350
+        y: 100
+      - id: broken_bow
+        sprite: warrior
+        x: 220
+        y: 95
+        facing: right
+    text: "Broken-Bow gives you a look — part disappointment, part understanding — and takes the shot himself. The arrow hits the neck. It drops within sixty paces. He is good. You are not him, not yet."
+    effects:
+      - stat: hunger
+        delta: 15
+      - stat: standing
+        delta: -10
+      - set_flag: deferred_kill
+    next: hunt_return_full
+
+  - id: hunt_return_full
+    scene: village
+    characters:
+      - id: player
+        sprite: player
+        x: 280
+        y: 100
+      - id: mother
+        sprite: mother
+        x: 200
+        y: 97
+    text: "Venison over open flame. Children tear into meat with their hands. Your mother watches you eat with relief so deep it looks like grief. This is what life here is: not dying, again, one more time."
+    effects:
+      - stat: hunger
+        delta: 10
+      - stat: morale
+        delta: 10
+    next: your_raid_intro
+
+  - id: hunt_return_empty
+    scene: village
+    characters:
+      - id: player
+        sprite: player
+        x: 300
+        y: 100
+    text: "You come back empty-handed and everyone sees it. Hunting is not a hobby. It is the difference between eating and starving. There will be other hunts."
+    effects:
+      - stat: standing
+        delta: -5
+      - stat: morale
+        delta: -5
+    next: your_raid_intro
+
+  # === YOUR FIRST RAID ===
+
+  - id: your_raid_intro
+    scene: village
+    characters:
+      - id: player
+        sprite: player
+        x: 320
+        y: 100
+      - id: heavy_hand
+        sprite: warrior
+        x: 200
+        y: 95
+    text: "You are fifteen. The dispute with the Flint People has not ended. Heavy-Hand is gathering warriors to strike back. You are expected to go."
+    effects:
+      - stat: morale
+        delta: -10
+    choices:
+      - text: "Volunteer eagerly"
+        next: raid_eager
+      - text: "Go because you have to"
+        next: raid_reluctant
+      - text: "Try to avoid going"
+        next: raid_avoid
+
+  - id: raid_eager
+    scene: village
+    characters:
+      - id: player
+        sprite: player
+        x: 300
+        y: 100
+      - id: heavy_hand
+        sprite: warrior
+        x: 180
+        y: 95
+    text: "You step forward. Heavy-Hand nods. Your stepfather's hand on your shoulder — you cannot tell if it is pride or dread. You are given a war club and a knife. You have never used them on a person."
+    effects:
+      - stat: standing
+        delta: 10
+    next: raid_march
+
+  - id: raid_reluctant
+    scene: village
+    characters:
+      - id: player
+        sprite: player
+        x: 300
+        y: 100
+    text: "Not going means you are not a man. Your family's standing drops. Heavy-Hand notices. You remember your aunt. You pick up a war club."
+    effects:
+      - stat: morale
+        delta: -5
+    next: raid_march
+
+  - id: raid_avoid
+    scene: longhouse
+    characters:
+      - id: player
+        sprite: player
+        x: 300
+        y: 100
+      - id: mother
+        sprite: mother
+        x: 200
+        y: 97
+    text: "You tell your mother you are sick. She looks at you with something terrible — the understanding that being sick is safer than being brave. Broken-Bow goes in your place. Heavy-Hand looks at you across the fire that night. You have been counted, and found short."
+    effects:
+      - stat: standing
+        delta: -20
+      - stat: morale
+        delta: -5
+      - set_flag: avoided_raid
+    next: raid_return
+
+  - id: raid_march
+    scene: forest
+    characters:
+      - id: player
+        sprite: player
+        x: 350
+        y: 100
+      - id: warrior_1
+        sprite: warrior
+        x: 180
+        y: 95
+      - id: warrior_2
+        sprite: warrior
+        x: 230
+        y: 97
+    text: "Twelve men through the forest for two days. No one talks about killing. These are men walking quietly, some of them scared, all pretending they aren't."
+    next: raid_attack
+
+  - id: raid_attack
+    scene: village
+    characters:
+      - id: player
+        sprite: player
+        x: 320
+        y: 100
+      - id: enemy
+        sprite: warrior
+        x: 200
+        y: 97
+        facing: right
+    text: "You hit the fishing camp at dawn. Twenty people, half women and children. The warriors scramble for weapons. The noise is ungodly.\n\nA Flint People man comes at you. Maybe thirty — old, here. He has a spear, you have a club. He thrusts, you dodge, you swing and hit his arm. He drops the spear. He looks at you. He is not evil. He is a man defending his home."
+    choices:
+      - text: "Hit him again"
+        next: raid_kill
+      - text: "Let him go"
+        next: raid_mercy
+      - text: "Hesitate"
+        next: raid_hesitate
+
+  - id: raid_kill
+    scene: village
+    characters:
+      - id: player
+        sprite: player
+        x: 300
+        y: 100
+    text: "You hit him in the head. You hit him again because the fear makes you keep swinging. When you stop, he is not moving. There is no glory. There is a man on the ground who was alive a minute ago because of a fishing spot."
+    effects:
+      - stat: morale
+        delta: -20
+      - stat: standing
+        delta: 15
+      - set_flag: killed_a_man
+    next: raid_aftermath_2
+
+  - id: raid_mercy
+    scene: village
+    characters:
+      - id: player
+        sprite: player
+        x: 320
+        y: 100
+      - id: ally_warrior
+        sprite: warrior
+        x: 380
+        y: 95
+    text: "You step back. He runs. Another warrior brings him down with a thrown club. 'You let him go,' the warrior says. Word will get back to Heavy-Hand."
+    effects:
+      - stat: standing
+        delta: -10
+      - stat: morale
+        delta: -10
+      - set_flag: showed_mercy
+    next: raid_aftermath_2
+
+  - id: raid_hesitate
+    scene: village
+    characters:
+      - id: player
+        sprite: player
+        x: 320
+        y: 103
+    text: "You freeze. The same freeze from the river. He grabs his spear and drives it into your shoulder. The pain unfreezes you. You swing wildly. Another warrior finishes him. You are bleeding from a wound that could kill you if it festers."
+    effects:
+      - stat: health
+        delta: -20
+      - stat: morale
+        delta: -15
+      - set_flag: wounded_in_raid
+    next: raid_aftermath_2
+
+  - id: raid_aftermath_2
+    scene: forest
+    characters:
+      - id: player
+        sprite: player
+        x: 300
+        y: 100
+      - id: warrior_1
+        sprite: warrior
+        x: 180
+        y: 95
+    text: "Four Flint People dead. One of yours lost an eye. The women and children scatter. Heavy-Hand declares victory. It does not feel like victory.\n\nThe walk home is quiet. The veterans joke. The new ones walk in silence. A boy called Stone-Thrower vomits behind a tree. Everyone sees. No one says anything."
+    effects:
+      - stat: morale
+        delta: -5
+      - set_flag: raided_flint_people
+    next: raid_return
+
+  - id: raid_return
+    scene: village
+    characters:
+      - id: player
+        sprite: player
+        x: 350
+        y: 100
+      - id: heavy_hand
+        sprite: warrior
+        x: 200
+        y: 95
+    text: "Heavy-Hand tells the story around the fire, making it brave and necessary. He does not mention the screaming. The children listen wide-eyed. You were one of those children five years ago. Now you know what the stories leave out."
+    effects:
+      - stat: morale
+        delta: -5
+    next: marriage_intro
+
+  # === MARRIAGE ===
+
+  - id: marriage_intro
+    scene: village
+    characters:
+      - id: player
+        sprite: player
+        x: 300
+        y: 100
+      - id: walks_in_shade
+        sprite: default
+        x: 200
+        y: 97
+    text: "You are sixteen. Your mother has arranged a marriage with a Turtle Clan girl named Walks-in-Shade. You have met her twice. Her family has flint deposits; yours has hunting grounds. She looks at you the way you might look at a tool — evaluating whether it will be useful."
+    choices:
+      - text: "Try to talk to her"
+        next: marriage_talk
+      - text: "Say nothing — let the families arrange it"
+        next: marriage_silent
+      - text: "Tell your mother you don't want this"
+        next: marriage_refuse
+
+  - id: marriage_talk
+    scene: village
+    characters:
+      - id: player
+        sprite: player
+        x: 300
+        y: 100
+      - id: walks_in_shade
+        sprite: default
+        x: 210
+        y: 97
+    text: "You say something about the weather. She says, 'Can you hunt?' You say yes. 'Good. My last family's man couldn't. We nearly starved.' She is fifteen and already thinking about whether you can keep children alive."
+    effects:
+      - stat: standing
+        delta: 5
+    next: marriage_done
+
+  - id: marriage_silent
+    scene: village
+    characters:
+      - id: player
+        sprite: player
+        x: 320
+        y: 100
+      - id: mother
+        sprite: mother
+        x: 170
+        y: 95
+    text: "Gifts are exchanged — furs, tools, dried meat. A business transaction without writing or contracts, enforced only by the knowledge that both families suffer if it falls apart."
+    next: marriage_done
+
+  - id: marriage_refuse
+    scene: longhouse
+    characters:
+      - id: player
+        sprite: player
+        x: 300
+        y: 100
+      - id: mother
+        sprite: mother
+        x: 200
+        y: 97
+    text: "'Their family has flint. Without flint, no tools. Without tools, we do not eat. You will marry her.' This is not cruelty. This is arithmetic."
+    effects:
+      - stat: morale
+        delta: -10
+    next: marriage_done
+
+  - id: marriage_done
+    scene: longhouse
+    characters:
+      - id: player
+        sprite: player
+        x: 300
+        y: 100
+      - id: walks_in_shade
+        sprite: default
+        x: 230
+        y: 97
+    text: "You are married before autumn. No vows, no rings, no record. You move into her family's longhouse. Neither of you chose this. Both of you will do it."
+    effects:
+      - set_flag: married
+      - stat: standing
+        delta: 5
+    next: marriage_autumn
+
+  - id: marriage_autumn
+    mood: beauty
+    scene: river
+    characters:
+      - id: player
+        sprite: player
+        x: 280
+        y: 100
+      - id: walks_in_shade
+        sprite: default
+        x: 220
+        y: 98
+    text: "One night in late autumn, she says quietly, 'The maples turned today. By the river.' The next morning you walk there together. Red and orange and gold reflected in still water, so vivid the world looks like it is burning from the inside. You say nothing and it is the first time you feel something for her that is not obligation."
+    effects:
+      - stat: morale
+        delta: 15
+    next: shaman_prophecy
+
+  # === THE SHAMAN'S PROPHECY ===
+
+  - id: shaman_prophecy
+    mood: spirit
+    scene: longhouse
+    characters:
+      - id: shaman
+        sprite: elder
+        x: 200
+        y: 95
+      - id: heavy_hand
+        sprite: warrior
+        x: 300
+        y: 97
+      - id: player
+        sprite: player
+        x: 380
+        y: 100
+    text: "The shaman Sees-the-Dark goes into a trance and announces the spirits say to move to higher ground — a great flood is coming.\n\nThere is debate, but not much. His predictions are wrong as often as right, but no one keeps records, so everyone remembers the hits. Heavy-Hand supports the move."
+    choices:
+      - text: "Go with the village"
+        next: shaman_move
+      - text: "Speak against the move"
+        next: shaman_oppose
+
+  - id: shaman_oppose
+    scene: village
+    characters:
+      - id: player
+        sprite: player
+        x: 300
+        y: 100
+      - id: heavy_hand
+        sprite: warrior
+        x: 180
+        y: 95
+    text: "You say, quietly, that moving in late autumn is dangerous. The high ground has no shelter. Heavy-Hand hears. He looks at you the way he looked at your aunt. You stop talking."
+    effects:
+      - stat: standing
+        delta: -10
+      - stat: morale
+        delta: -5
+      - set_flag: opposed_shaman
+    next: shaman_move
+
+  - id: shaman_move
+    scene: night
+    characters:
+      - id: player
+        sprite: player
+        x: 300
+        y: 100
+      - id: walks_in_shade
+        sprite: default
+        x: 230
+        y: 98
+    text: "The village moves to an exposed ridge. You build lean-tos from branches. They are not enough.\n\nThe flood does not come. Winter does — early and hard. The lean-tos collapse under snow. Two old women freeze in the same night. A baby dies of exposure. By spring, five people are dead. Sees-the-Dark says the spirits changed their minds. No one holds anyone accountable."
+    effects:
+      - stat: warmth
+        delta: -15
+      - stat: health
+        delta: -10
+      - stat: morale
+        delta: -15
+      - set_flag: survived_bad_prophecy
+    next: spring_song
+
+  # === END OF ADOLESCENCE ===
+
+  - id: spring_song
+    mood: beauty
+    scene: field
+    text: "Spring. Three women are planting corn, singing a planting song older than anyone alive. Three notes, rising and falling. A child stops playing to listen. An old man closes his eyes. The song has no author and no written form and it is beautiful in a way that nothing preserved in any archive will ever capture."
+    effects:
+      - stat: morale
+        delta: 10
+    next: ch2_ending
+
+  - id: ch2_ending
+    scene: longhouse
+    characters:
+      - id: player
+        sprite: player
+        x: 300
+        y: 100
+      - id: walks_in_shade
+        sprite: default
+        x: 220
+        y: 97
+    text: "You are eighteen. You have been cut, starved, frozen, married to a stranger, sent to kill people over a fishing spot, and followed a shaman's bad advice to a ridge where people died. The scars on your chest have healed into smooth ridges you touch sometimes when you cannot sleep.\n\nWalks-in-Shade is pregnant. Adulthood is here."
+    effects:
+      - stat: morale
+        delta: 5
+      - set_flag: chapter2_complete
+      - set_flag: wife_pregnant
+    next_event: chapter3
