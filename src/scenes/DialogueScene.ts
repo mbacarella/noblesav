@@ -70,6 +70,7 @@ export class DialogueScene extends Phaser.Scene {
   private maxScroll: number = 0;
   private visibleHeight: number = 0;
   private scrollIndicator!: Phaser.GameObjects.Text;
+  private scrollDownIndicator!: Phaser.GameObjects.Text;
   private chapterLabel!: Phaser.GameObjects.Text;
   private touchStartY: number = 0;
   private isTouchScrolling: boolean = false;
@@ -215,6 +216,21 @@ export class DialogueScene extends Phaser.Scene {
       '\u25b2',
       { fontFamily: 'monospace', fontSize: '12px', color: '#444444' }
     ).setOrigin(1, 0).setVisible(false);
+
+    // Down arrow — visible when content extends below the visible area
+    this.scrollDownIndicator = this.add.text(
+      width - BOX_MARGIN - BOX_PADDING - 10,
+      this.boxTop + this.boxHeight - 8,
+      '\u25bc',
+      { fontFamily: 'monospace', fontSize: '12px', color: '#666666' }
+    ).setOrigin(1, 1).setVisible(false);
+    this.tweens.add({
+      targets: this.scrollDownIndicator,
+      alpha: 0.3,
+      duration: 600,
+      yoyo: true,
+      repeat: -1,
+    });
 
     // Input
     this.input.keyboard!.on('keydown', this.handleInput, this);
@@ -437,10 +453,14 @@ export class DialogueScene extends Phaser.Scene {
       this.boxTop + this.boxHeight - 5
     );
 
-    // Update scroll indicator position
+    // Update scroll indicator positions
     this.scrollIndicator.setPosition(
       width - BOX_MARGIN - BOX_PADDING - 10,
       this.boxTop + 8
+    );
+    this.scrollDownIndicator.setPosition(
+      width - BOX_MARGIN - BOX_PADDING - 10,
+      this.boxTop + this.boxHeight - 8
     );
 
     this.drawDialogueBox();
@@ -504,6 +524,7 @@ export class DialogueScene extends Phaser.Scene {
     this.scrollY = Math.max(0, this.scrollY);
     this.contentContainer.y = (this.boxTop + BOX_PADDING) - this.scrollY;
     this.scrollIndicator.setVisible(this.scrollY > 0);
+    this.scrollDownIndicator.setVisible(this.maxScroll > 0 && this.scrollY < this.maxScroll);
   }
 
   private scroll(delta: number): void {
@@ -604,15 +625,9 @@ export class DialogueScene extends Phaser.Scene {
     const startText = () => {
       const onTextComplete = () => {
         if (node.roll) {
-          const result = this.engine.resolveRoll(node.roll);
-          if (result) {
-            this.time.delayedCall(800, () => this.presentNode(result));
-          }
+          this.continuePrompt.setVisible(true);
         } else if (node.random && node.random.length > 0) {
-          const result = this.engine.resolveRandom();
-          if (result) {
-            this.time.delayedCall(800, () => this.presentNode(result));
-          }
+          this.continuePrompt.setVisible(true);
         } else if (node.choices && node.choices.length > 0) {
           this.showChoices(this.engine.getAvailableChoices());
         } else if (node.next_event) {
@@ -654,6 +669,7 @@ export class DialogueScene extends Phaser.Scene {
         this.autoScrollDuringTypewrite();
         if (charIndex >= text.length) {
           this.isTypewriting = false;
+          this.updateScroll();
           onComplete();
         }
       },
@@ -666,6 +682,7 @@ export class DialogueScene extends Phaser.Scene {
     }
     this.textObject.setText(this.fullText);
     this.isTypewriting = false;
+    this.updateScroll();
     this.scrollToBottom();
   }
 
@@ -807,15 +824,9 @@ export class DialogueScene extends Phaser.Scene {
 
   private resolveAfterSkip(node: NarrativeNode): void {
     if (node.roll) {
-      const result = this.engine.resolveRoll(node.roll);
-      if (result) {
-        this.time.delayedCall(300, () => this.presentNode(result));
-      }
+      this.continuePrompt.setVisible(true);
     } else if (node.random && node.random.length > 0) {
-      const result = this.engine.resolveRandom();
-      if (result) {
-        this.time.delayedCall(300, () => this.presentNode(result));
-      }
+      this.continuePrompt.setVisible(true);
     } else if (node.choices && node.choices.length > 0) {
       this.showChoices(this.engine.getAvailableChoices());
     } else if (node.next_event) {
@@ -857,7 +868,13 @@ export class DialogueScene extends Phaser.Scene {
     // Continue prompt (auto-advance, chain event, or just waiting)
     if (key === Phaser.Input.Keyboard.KeyCodes.ENTER || key === Phaser.Input.Keyboard.KeyCodes.SPACE) {
       const node = this.engine.getCurrentNode();
-      if (node?.next_event) {
+      if (node?.roll) {
+        const result = this.engine.resolveRoll(node.roll);
+        if (result) this.presentNode(result);
+      } else if (node?.random && node.random.length > 0) {
+        const result = this.engine.resolveRandom();
+        if (result) this.presentNode(result);
+      } else if (node?.next_event) {
         this.loadAndStart(node.next_event);
       } else if (node?.next) {
         const nextNode = this.engine.advanceToNext();
